@@ -12,7 +12,7 @@ import java.util.List;
 public class FolderAnalyzer {
     private JButton btChooseFolder;
     private JTextField tfFolderToOrder;
-    private JList<ImageFileData> lsFilesToProcess;
+    private JList lsFilesToProcess;
     private JLabel lbInfo;
     private JLabel lbFilesProcessing;
     private JButton btSortPhotos;
