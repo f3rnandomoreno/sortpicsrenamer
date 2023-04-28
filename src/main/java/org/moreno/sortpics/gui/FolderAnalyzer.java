@@ -44,4 +44,10 @@ public class FolderAnalyzer {
         newListModel.addAll(list);
         this.lsFilesToProcess.setModel(newListModel);
     }
+
+    public void updateJList(List<ImageFileData> listImg) {
+        DefaultListModel<ImageFileData> newListModel = new DefaultListModel<>();
+        newListModel.addAll(listImg);
+        this.lsFilesToProcess.setModel(newListModel);
+    }
 }

@@ -9,10 +9,12 @@ import org.moreno.sortpics.controller.task.SortPhotosTask;
 import org.moreno.sortpics.gui.FolderAnalyzer;
 import org.moreno.sortpics.gui.ThumbnailListCellRenderer;
 import org.moreno.sortpics.model.FirstPanelModel;
+import org.moreno.sortpics.model.ImageFileData;
 
 import javax.swing.*;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 /**
@@ -56,7 +58,6 @@ public class FirstPanelController {
                             this.view.getBtSortPhotos().setEnabled(true);
                         }
                     }
-
                     if ("progress".equals(evt1.getPropertyName())) {
                         Integer progressValue = (Integer) evt1.getNewValue();
                         this.view.setProgressValue(progressValue);
@@ -87,9 +88,9 @@ public class FirstPanelController {
 //        this.view.updateJList(imgFileData);
 //    }
 
-//    public void updateJList(List<ImageFileData> listImg) {
-//        this.view.updateJList(listImg);
-//    }
+    public void updateJList(List<ImageFileData> listImg) {
+        this.view.updateJList(listImg);
+    }
 
     public void setStateText(String stateText) {
         this.view.getLbInfo().setText(stateText);

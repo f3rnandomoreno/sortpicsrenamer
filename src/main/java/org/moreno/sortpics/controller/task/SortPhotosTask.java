@@ -80,7 +80,7 @@ public class SortPhotosTask extends SwingWorker<Void, ImageFileData> {
         controller.setStateText("Search finished.");
         controller.shutdownExecutorService();
         // TODO manage error
-//        controller.updateJList(this.model.getFiles());
+        controller.updateJList(this.model.getFiles());
         SwingUtilities.invokeLater(() -> {
             controller.sortJList();
         });
