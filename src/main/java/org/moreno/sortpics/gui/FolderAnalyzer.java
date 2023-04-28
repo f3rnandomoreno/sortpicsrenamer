@@ -12,7 +12,7 @@ import java.util.List;
 public class FolderAnalyzer {
     private JButton btChooseFolder;
     private JTextField tfFolderToOrder;
-    private JList lsFilesToProcess;
+    private JList<ImageFileData> lsFilesToProcess;
     private JLabel lbInfo;
     private JLabel lbFilesProcessing;
     private JButton btSortPhotos;
@@ -26,11 +26,6 @@ public class FolderAnalyzer {
     public void setProgressValue(int progress) {
         this.pbOrderProgress.setValue(progress);
     }
-
-//    public void updateJList(ImageFileData newItem) {
-//        javax.swing.DefaultListModel<ImageFileData> model = (javax.swing.DefaultListModel<ImageFileData>) lsFilesToProcess.getModel();
-//        model.addElement(newItem);
-//    }
 
     public void sortJList() {
         DefaultListModel<ImageFileData> newListModel = new DefaultListModel<>();
