@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.moreno.sortpics.controller.FirstPanelController;
 import org.moreno.sortpics.controller.task.SortPhotosTask;
-import org.moreno.sortpics.gui.FirstPanel;
+import org.moreno.sortpics.gui.FolderAnalyzer;
 import org.moreno.sortpics.model.FirstPanelModel;
 
 import java.io.File;
@@ -32,7 +32,7 @@ public class TestCommon {
     protected static final int NUMBER_OF_FILES = NUMBER_OF_FILES_RENAMED + NUMBER_OF_FILES_NO_RENAMED;
 
     protected FirstPanelModel firstPanelModel = new FirstPanelModel();
-    protected FirstPanel view = new FirstPanel();
+    protected FolderAnalyzer view = new FolderAnalyzer();
     protected FirstPanelController firstPanelController = new FirstPanelController(view, firstPanelModel);
     protected SortPhotosTask sut;
 

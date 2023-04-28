@@ -14,6 +14,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     FirstPanelController firstPanelController;
     FirstPanelModel firstPanelModel;
+    FolderAnalyzer folderAnalyzer = new FolderAnalyzer();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private org.moreno.sortpics.gui.FirstPanel firstPanel1;
@@ -25,8 +26,7 @@ public class MainWindow extends javax.swing.JFrame {
     public MainWindow() {
         initComponents();
         firstPanelModel = new FirstPanelModel();
-        firstPanelController = new FirstPanelController(this.firstPanel1, firstPanelModel);
-
+        firstPanelController = new FirstPanelController(folderAnalyzer, firstPanelModel);
     }
 
     /**

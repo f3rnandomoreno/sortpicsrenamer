@@ -4,6 +4,13 @@
  */
 package org.moreno.sortpics.controller.task;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.sanselan.ImageReadException;
+import org.moreno.sortpics.controller.FirstPanelController;
+import org.moreno.sortpics.model.FirstPanelModel;
+import org.moreno.sortpics.model.ImageFileData;
+
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
@@ -11,14 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.sanselan.ImageReadException;
-import org.moreno.sortpics.controller.FirstPanelController;
-import org.moreno.sortpics.model.ImageFileData;
-import org.moreno.sortpics.model.FirstPanelModel;
 
 /**
  * @author Fernando Moreno Ruiz <fernandomorenoruiz@gmail.com>
@@ -33,6 +32,18 @@ public class SortPhotosTask extends SwingWorker<Void, ImageFileData> {
     public SortPhotosTask(FirstPanelController controller, FirstPanelModel model) {
         this.controller = controller;
         this.model = model;
+    }
+
+    public static boolean isMediaFile(String extension) {
+        String[] mediaExtensions = {
+                "jpg", "jpeg", "png", "gif", "bmp", "tiff", "mp4", "avi", "mkv", "wmv", "mov", "3gp"
+        };
+        for (String mediaExtension : mediaExtensions) {
+            if (mediaExtension.equals(extension.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -68,7 +79,8 @@ public class SortPhotosTask extends SwingWorker<Void, ImageFileData> {
     protected void done() {
         controller.setStateText("Search finished.");
         controller.shutdownExecutorService();
-        controller.updateJList(this.model.getFiles());
+        // TODO manage error
+//        controller.updateJList(this.model.getFiles());
         SwingUtilities.invokeLater(() -> {
             controller.sortJList();
         });
@@ -91,18 +103,6 @@ public class SortPhotosTask extends SwingWorker<Void, ImageFileData> {
             }
         }
         return mediaFilesList;
-    }
-
-    public static boolean isMediaFile(String extension) {
-        String[] mediaExtensions = {
-                "jpg", "jpeg", "png", "gif", "bmp", "tiff", "mp4", "avi", "mkv", "wmv", "mov", "3gp"
-        };
-        for (String mediaExtension : mediaExtensions) {
-            if (mediaExtension.equals(extension.toLowerCase())) {
-                return true;
-            }
-        }
-        return false;
     }
 
 //    public JList<ImageFileData> getListImages() {

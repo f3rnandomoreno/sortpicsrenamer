@@ -5,31 +5,27 @@
 package org.moreno.sortpics.controller;
 
 import org.moreno.sortpics.controller.task.ImageLoaderWorker;
-
-import java.beans.PropertyChangeEvent;
-import java.io.File;
-import java.util.List;
-import java.util.prefs.Preferences;
-import javax.swing.JFileChooser;
-import javax.swing.SwingWorker;
-
-import org.moreno.sortpics.gui.FirstPanel;
+import org.moreno.sortpics.controller.task.SortPhotosTask;
+import org.moreno.sortpics.gui.FolderAnalyzer;
 import org.moreno.sortpics.gui.ThumbnailListCellRenderer;
 import org.moreno.sortpics.model.FirstPanelModel;
-import org.moreno.sortpics.model.ImageFileData;
-import org.moreno.sortpics.controller.task.SortPhotosTask;
+
+import javax.swing.*;
+import java.beans.PropertyChangeEvent;
+import java.io.File;
+import java.util.prefs.Preferences;
 
 /**
  * @author Fernando Moreno Ruiz <fernandomorenoruiz@gmail.com>
  */
 public class FirstPanelController {
 
-    FirstPanel view;
+    FolderAnalyzer view;
     FirstPanelModel model;
     SortPhotosTask sortPhotosTask = null;
     ImageLoaderWorker imageLoaderWorker;
 
-    public FirstPanelController(FirstPanel view, FirstPanelModel model) {
+    public FirstPanelController(FolderAnalyzer view, FirstPanelModel model) {
         this.view = view;
         this.model = model;
         imageLoaderWorker = new ImageLoaderWorker(model);
@@ -76,7 +72,7 @@ public class FirstPanelController {
         if (model.getDirectory() != null) {
             fileChooser.setCurrentDirectory(model.getDirectory());
         }
-        int result = fileChooser.showOpenDialog(view);
+        int result = fileChooser.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             var directory = fileChooser.getSelectedFile();
             model.setDirectory(directory);
@@ -87,13 +83,13 @@ public class FirstPanelController {
         }
     }
 
-    public void updateJList(ImageFileData imgFileData) {
-        this.view.updateJList(imgFileData);
-    }
+//    public void updateJList(ImageFileData imgFileData) {
+//        this.view.updateJList(imgFileData);
+//    }
 
-    public void updateJList(List<ImageFileData> listImg) {
-        this.view.updateJList(listImg);
-    }
+//    public void updateJList(List<ImageFileData> listImg) {
+//        this.view.updateJList(listImg);
+//    }
 
     public void setStateText(String stateText) {
         this.view.getLbInfo().setText(stateText);
