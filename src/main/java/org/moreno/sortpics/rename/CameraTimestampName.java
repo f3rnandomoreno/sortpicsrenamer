@@ -75,16 +75,23 @@ public class CameraTimestampName {
             if (optionalDate.isPresent()) {
                 dateString = optionalDate.get().format(DateTimeFormatter.ofPattern("(yyyy-MM-dd)'['HH.mm.ss']'"));
                 author = "FromFileName";
-            } else {
-                FileExifrInfo exifrInfo = JpegFileMetadata.getExifrInfo(path);
-                if (exifrInfo.captureDateIsNull()) {
+            }
+            FileExifrInfo exifrInfo = JpegFileMetadata.getExifrInfo(path);
+            if (exifrInfo.captureDateIsNull()) {
+                if (!optionalDate.isPresent()) {
                     author = "LastModifiedDate";
+                }
+                if (dateString.isEmpty()) {
                     dateString = JpegFileMetadata.getFerFormatDate(getLastModifiedDate(path));
-                } else {
-                    author = exifrInfo.getAuthorModel();
+                }
+            } else {
+                author = exifrInfo.getAuthorModel();
+                if (optionalDate.isPresent()) {
+                    author = author + "_FFN";
+                }
+                if (dateString.isEmpty()) {
                     dateString = JpegFileMetadata.getFerFormatDate(exifrInfo.getCaptureDate());
                 }
-
             }
 
 
