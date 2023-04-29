@@ -70,6 +70,9 @@ public class FirstPanelController {
                 // update progress
                 img.moveToNewName();
                 view.setProgressValue(ic);
+            } catch (NoSuchFileException ex) {
+                // show error message
+                JOptionPane.showMessageDialog(view.getMainPanel(), "File not found: " + img.getNewName(), "Error", JOptionPane.ERROR_MESSAGE);
             } catch (IOException ex) {
                 Logger.getLogger(FirstPanelController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
@@ -79,7 +82,7 @@ public class FirstPanelController {
     }
 
     private void renameMenuItemActionPerformed(ActionEvent actionEvent) {
-        ImageFileData selectedItem = (ImageFileData)view.getLsFilesToProcess().getSelectedValue();
+        ImageFileData selectedItem = (ImageFileData) view.getLsFilesToProcess().getSelectedValue();
         if (selectedItem != null) {
             var newName = showEditTextDialog(null, selectedItem.getNewName());
             selectedItem.setNewName(newName);
