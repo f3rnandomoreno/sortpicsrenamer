@@ -17,10 +17,10 @@ public class FolderAnalyzer {
     private JTextField tfFolderToOrder;
     private JList lsFilesToProcess;
     private JLabel lbInfo;
-    private JLabel lbFilesProcessing;
     private JButton btSortPhotos;
     private JProgressBar pbOrderProgress;
     private JPanel mainPanel;
+    private JButton btRenameFiles;
 
     // constructor
     public FolderAnalyzer() {

@@ -10,7 +10,7 @@ import javax.swing.*;
 public class Main {
 
     public static void main(String[] args) {
-        setLookAndFeel();
+        //setLookAndFeel();
         // Create a new instance of FolderAnalyzer
         FolderAnalyzer folderAnalyzer = new FolderAnalyzer();
         FirstPanelModel model = new FirstPanelModel();

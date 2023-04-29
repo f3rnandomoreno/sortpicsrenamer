@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package org.moreno.sortpics.controller;
 
 import org.moreno.sortpics.controller.task.ImageLoaderWorker;
@@ -19,7 +15,9 @@ import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+import java.util.stream.IntStream;
 
 import static org.moreno.sortpics.gui.EditTextDialog.showEditTextDialog;
 
@@ -45,12 +43,41 @@ public class FirstPanelController {
         view.getMenuItemMove().addActionListener(this::moveMenuItemActionPerformed);
         view.getMenuItemDelete().addActionListener(this::deleteMenuItemActionPerformed);
         view.getMenuItemRename().addActionListener(this::renameMenuItemActionPerformed);
+        view.getBtRenameFiles().addActionListener(this::btRenameFilesActionPerformed);
         Preferences prefs = Preferences.userRoot().node("com.moreno.sortpics");
         String lastPath = prefs.get("lastPath", null);
         if (lastPath != null) {
             model.setDirectory(new File(lastPath));
             this.view.getTfFolderToOrder().setText(lastPath);
         }
+    }
+
+    private void btRenameFilesActionPerformed(ActionEvent actionEvent) {
+        var model = view.getLsFilesToProcess().getModel();
+        // create string list to store errors
+
+        // create a new thread to rename files including view update
+        new Thread(() -> renameFiles(model)).start();
+        view.getLbInfo().setText("Renaming files...");
+
+
+    }
+
+    private void renameFiles(ListModel model) {
+        view.setProgressValue(0);
+        view.getPbOrderProgress().setMaximum(model.getSize());
+        IntStream.range(0, model.getSize()).forEach(ic -> {
+            ImageFileData img = (ImageFileData) model.getElementAt(ic);
+            try {
+                // update progress
+                img.moveToNewName();
+                view.setProgressValue(ic);
+            } catch (IOException ex) {
+                Logger.getLogger(FirstPanelController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+        });
+
+        view.getLbInfo().setText("Files renamed");
     }
 
     private void renameMenuItemActionPerformed(ActionEvent actionEvent) {
