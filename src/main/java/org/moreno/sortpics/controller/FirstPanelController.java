@@ -40,7 +40,7 @@ public class FirstPanelController {
         //view.getBtRenameFiles().setEnabled(false);
         view.getBtSortPhotos().addActionListener(this::btSortPhotosActionPerformed);
         view.getBtChooseFolder().addActionListener(this::chooseFolderActionPerformed);
-        view.getMenuItemMove().addActionListener(this::moveMenuItemActionPerformed);
+        view.getMenuItemRemoveCameraTimestamp().addActionListener(this::removeCameraTimestampMenuItemActionPerformed);
         view.getMenuItemDelete().addActionListener(this::deleteMenuItemActionPerformed);
         view.getMenuItemRename().addActionListener(this::renameMenuItemActionPerformed);
         view.getBtRenameFiles().addActionListener(this::btRenameFilesActionPerformed);
@@ -71,7 +71,7 @@ public class FirstPanelController {
                 view.setProgressValue(ic);
             } catch (NoSuchFileException ex) {
                 // show error message
-                JOptionPane.showMessageDialog(view.getMainPanel(), "File not found: " + img.getNewName(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(view.getMainPanel(), "File not found: " + img.getFileName(), "Error", JOptionPane.ERROR_MESSAGE);
             } catch (IOException ex) {
                 // show error message
                 JOptionPane.showMessageDialog(view.getMainPanel(), "Error renaming file: " + img.getFileName() + "- " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -117,9 +117,18 @@ public class FirstPanelController {
         }
     }
 
-    private void moveMenuItemActionPerformed(ActionEvent actionEvent) {
+    private void removeCameraTimestampMenuItemActionPerformed(ActionEvent actionEvent) {
         // get list from view
         List selectedValuesList = view.getLsFilesToProcess().getSelectedValuesList();
+        for (Object selectedValue : selectedValuesList) {
+            ImageFileData imageFileData = (ImageFileData) selectedValue;
+            try {
+                imageFileData.moveToNoCameraStampName();
+            } catch (IOException e) {
+                // show dialog with error
+                JOptionPane.showMessageDialog(view.getMainPanel(), "Error renaming file: " + imageFileData.getFileName() + "- " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
         System.out.printf("selectedValuesList: %s%n", selectedValuesList);
     }
 

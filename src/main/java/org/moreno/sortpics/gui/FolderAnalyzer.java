@@ -12,7 +12,7 @@ import java.util.List;
 public class FolderAnalyzer {
     JMenuItem menuItemDelete;
     JMenuItem menuItemRename;
-    JMenuItem menuItemMove;
+    JMenuItem menuItemRemoveCameraTimestamp;
     private JButton btChooseFolder;
     private JTextField tfFolderToOrder;
     private JList lsFilesToProcess;
@@ -32,10 +32,10 @@ public class FolderAnalyzer {
         JPopupMenu popupMenu = new JPopupMenu();
         menuItemDelete = new JMenuItem("Delete");
         menuItemRename = new JMenuItem("Edit new name");
-        menuItemMove = new JMenuItem("Remove Camera timestamp format from filename");
+        menuItemRemoveCameraTimestamp = new JMenuItem("Remove Camera timestamp format from filename");
         popupMenu.add(menuItemDelete);
         popupMenu.add(menuItemRename);
-        popupMenu.add(menuItemMove);
+        popupMenu.add(menuItemRemoveCameraTimestamp);
         // add JPopupMenu to the list
         this.lsFilesToProcess.setComponentPopupMenu(popupMenu);
     }
