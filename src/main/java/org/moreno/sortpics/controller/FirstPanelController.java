@@ -37,7 +37,7 @@ public class FirstPanelController {
         imageLoaderWorker.execute();
         ThumbnailListCellRenderer renderer = new ThumbnailListCellRenderer(model);
         view.setCellRenderer(renderer);
-        //view.getBtRenameFiles().setEnabled(false);
+        view.getBtRenameFiles().setEnabled(false);
         view.getBtSortPhotos().addActionListener(this::btSortPhotosActionPerformed);
         view.getBtChooseFolder().addActionListener(this::chooseFolderActionPerformed);
         view.getMenuItemRemoveCameraTimestamp().addActionListener(this::removeCameraTimestampMenuItemActionPerformed);
@@ -194,5 +194,9 @@ public class FirstPanelController {
 
     public void shutdownExecutorService() {
         imageLoaderWorker.shutdownExecutorService();
+    }
+
+    public void activateBtRenameFiles() {
+        this.view.getBtRenameFiles().setEnabled(true);
     }
 }
