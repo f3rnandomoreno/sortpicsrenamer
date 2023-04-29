@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.stream.IntStream;
 
@@ -74,7 +73,8 @@ public class FirstPanelController {
                 // show error message
                 JOptionPane.showMessageDialog(view.getMainPanel(), "File not found: " + img.getNewName(), "Error", JOptionPane.ERROR_MESSAGE);
             } catch (IOException ex) {
-                Logger.getLogger(FirstPanelController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                // show error message
+                JOptionPane.showMessageDialog(view.getMainPanel(), "Error renaming file: " + img.getFileName() + "- " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
