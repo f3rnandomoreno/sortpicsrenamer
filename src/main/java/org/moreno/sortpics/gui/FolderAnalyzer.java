@@ -31,7 +31,7 @@ public class FolderAnalyzer {
         // create JPopupMenu with 3 items
         JPopupMenu popupMenu = new JPopupMenu();
         menuItemDelete = new JMenuItem("Delete");
-        menuItemRename = new JMenuItem("Rename");
+        menuItemRename = new JMenuItem("Edit new name");
         menuItemMove = new JMenuItem("Remove Camera timestamp format from filename");
         popupMenu.add(menuItemDelete);
         popupMenu.add(menuItemRename);

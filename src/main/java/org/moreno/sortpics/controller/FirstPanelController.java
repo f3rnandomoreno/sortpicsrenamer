@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import static org.moreno.sortpics.gui.EditTextDialog.showEditTextDialog;
+
 /**
  * @author Fernando Moreno Ruiz <fernandomorenoruiz@gmail.com>
  */
@@ -42,11 +44,21 @@ public class FirstPanelController {
         view.getBtChooseFolder().addActionListener(this::chooseFolderActionPerformed);
         view.getMenuItemMove().addActionListener(this::moveMenuItemActionPerformed);
         view.getMenuItemDelete().addActionListener(this::deleteMenuItemActionPerformed);
+        view.getMenuItemRename().addActionListener(this::renameMenuItemActionPerformed);
         Preferences prefs = Preferences.userRoot().node("com.moreno.sortpics");
         String lastPath = prefs.get("lastPath", null);
         if (lastPath != null) {
             model.setDirectory(new File(lastPath));
             this.view.getTfFolderToOrder().setText(lastPath);
+        }
+    }
+
+    private void renameMenuItemActionPerformed(ActionEvent actionEvent) {
+        ImageFileData selectedItem = (ImageFileData)view.getLsFilesToProcess().getSelectedValue();
+        if (selectedItem != null) {
+            var newName = showEditTextDialog(null, selectedItem.getNewName());
+            selectedItem.setNewName(newName);
+            sortJList();
         }
     }
 
