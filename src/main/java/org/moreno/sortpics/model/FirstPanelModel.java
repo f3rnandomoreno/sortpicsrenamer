@@ -7,6 +7,7 @@ package org.moreno.sortpics.model;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -37,4 +38,11 @@ public class FirstPanelModel {
         return filesToCreateThumbnail.get();
     }
 
+    public void sort() {
+        Collections.sort(files);
+    }
+
+    public AtomicReference<ConcurrentLinkedDeque<File>> getFilesAtomicToCreateThumbnail() {
+        return filesToCreateThumbnail;
+    }
 }

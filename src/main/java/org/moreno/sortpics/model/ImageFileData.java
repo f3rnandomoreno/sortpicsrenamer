@@ -4,14 +4,6 @@
  */
 package org.moreno.sortpics.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.sanselan.ImageReadException;
-import org.moreno.sortpics.rename.CameraTimestampName;
-import org.moreno.sortpics.rename.JpegFileMetadata;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,54 +11,88 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.sanselan.ImageReadException;
+import org.moreno.sortpics.rename.CameraTimestampName;
+import org.moreno.sortpics.rename.JpegFileMetadata;
+import org.moreno.sortpics.rename.NameUtils;
+import static org.moreno.sortpics.utils.ColorGenerator.getColorFromDate;
+import org.moreno.sortpics.utils.Log;
+
 /**
+ *
  * @author Fernando Moreno Ruiz <fernandomorenoruiz@gmail.com>
  */
 @Builder
 @Data
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class ImageFileData implements Comparable<ImageFileData> {
 
     private final File originalFile;
-    private final String newPath;
+    private String fileName;
     private String newName;
-
-    public ImageFileData(File file, String string, String string1) {
-        // show trace of enter here
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-
-    }
+    private final String newPath;
+    private final String absolutePath;
+    private boolean imageFile;
+    private boolean file;
+    private boolean videoFile;
+    private String timeDateString;
+    private String htmlColor;
 
     public ImageFileData(File file, int number) throws IOException, ImageReadException, ParseException {
         this.originalFile = file;
+        this.file = file.isFile();
         this.newPath = FilenameUtils.getFullPath(file.getCanonicalPath());
         this.newName = CameraTimestampName.getName(file.getAbsolutePath(), number);
+        this.absolutePath = originalFile.getAbsolutePath();
+        this.fileName = originalFile.getName();
+        this.imageFile = NameUtils.isImage(file);
+        this.videoFile = false;
+        this.timeDateString = getDayDate();
+        this.htmlColor = getColorFromDate(timeDateString);
     }
 
     public void moveToNewName() throws IOException {
-        if (!isAlreadyRenamed()) {
+        if (!newNameIsDifferent()) {
             var path = Files.move(Path.of(originalFile.getCanonicalPath()), Path.of(newPath + newName), StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("moved file: " + path);
+            Log.debug("moved file: " + path);
         }
     }
 
+    public boolean newNameIsDifferent(){
+        return newName.equals(fileName);
+    }
+
     public void moveToNoCameraStampName() throws IOException {
+        Log.debug("enter moveToCameraStampName: " + originalFile.getName());
         if (isAlreadyRenamed()) {
             var extension = FilenameUtils.getExtension(originalFile.getName());
             var data = JpegFileMetadata.getInfoData(originalFile.getName());
             var path = Files.move(Path.of(originalFile.getCanonicalPath()), Path.of(newPath + data + "." + extension), StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("moved file: " + path);
+            Log.debug("moved file: " + path);
         }
     }
 
     public void remove() throws IOException {
         Path pathFile = Path.of(originalFile.getCanonicalPath());
         Files.delete(pathFile);
-        System.out.println("remove file: " + pathFile);
+        Log.debug("remove file: " + pathFile);
     }
 
     public boolean isAlreadyRenamed() {
         return JpegFileMetadata.isCameraTimestampNaming(originalFile.getAbsolutePath());
+    }
+
+    public String getDayDate(){
+        return JpegFileMetadata.getDateFromFileName(newName).getDateString();
+    }
+    public String getTimeDate(){
+        return JpegFileMetadata.getDateFromFileName(newName).getTimeString();
     }
 
     @Override
