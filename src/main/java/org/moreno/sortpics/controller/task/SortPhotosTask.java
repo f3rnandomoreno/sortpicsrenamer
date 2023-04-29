@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.sanselan.ImageReadException;
@@ -56,9 +55,7 @@ public class SortPhotosTask extends SwingWorker<Void, ImageFileData> {
     @Override
     protected void process(List<ImageFileData> chunks) {
         for(ImageFileData imgFileData:chunks){
-            SwingUtilities.invokeLater(()->{
-                this.model.getFiles().add(imgFileData);
-            });
+            this.model.getFiles().add(imgFileData);
         }
     }
 

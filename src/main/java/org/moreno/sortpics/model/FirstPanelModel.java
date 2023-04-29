@@ -22,7 +22,7 @@ import lombok.Data;
  */
 @Data
 public class FirstPanelModel {
-    private File directory = new File("/Users/fmoreno/Google Drive/Mi unidad/Fotos/Compartidas");
+    private File directory;
     private List<ImageFileData> files = new ArrayList<>();
     private final AtomicReference<ConcurrentMap<String, ImageIcon>> thumbnailCache = new AtomicReference(new ConcurrentHashMap<>());
     private final AtomicReference<ConcurrentLinkedDeque<File>> filesToCreateThumbnail = new AtomicReference(new ConcurrentLinkedDeque<>());

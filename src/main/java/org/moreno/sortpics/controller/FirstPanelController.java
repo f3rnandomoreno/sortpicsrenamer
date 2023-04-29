@@ -38,6 +38,7 @@ public class FirstPanelController {
         imageLoaderWorker.execute();
         ThumbnailListCellRenderer renderer = new ThumbnailListCellRenderer(model);
         view.setCellRenderer(renderer);
+        //view.getBtRenameFiles().setEnabled(false);
         view.getBtSortPhotos().addActionListener(this::btSortPhotosActionPerformed);
         view.getBtChooseFolder().addActionListener(this::chooseFolderActionPerformed);
         view.getMenuItemMove().addActionListener(this::moveMenuItemActionPerformed);
@@ -54,12 +55,9 @@ public class FirstPanelController {
 
     private void btRenameFilesActionPerformed(ActionEvent actionEvent) {
         var model = view.getLsFilesToProcess().getModel();
-        // create string list to store errors
-
         // create a new thread to rename files including view update
         new Thread(() -> renameFiles(model)).start();
         view.getLbInfo().setText("Renaming files...");
-
 
     }
 
