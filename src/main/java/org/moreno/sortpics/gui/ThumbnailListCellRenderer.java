@@ -48,22 +48,7 @@ public class ThumbnailListCellRenderer extends DefaultListCellRenderer {
                 if (thumbnailIcon == null) {
                     label.setIcon(loadingImageIcon);
                 } else {
-                    ImageIcon originalIcon = model.getThumbnailCache().get(imagePath);
-                    int originalWidth = originalIcon.getIconWidth();
-                    int originalHeight = originalIcon.getIconHeight();
-
-                    // Calcular el nuevo ancho y alto conservando el aspect ratio
-                    int newWidth;
-                    int newHeight;
-                    if (originalWidth > originalHeight) {
-                        newWidth = thumbnailSize;
-                        newHeight = (int) (((double) originalHeight / originalWidth) * thumbnailSize);
-                    } else {
-                        newHeight = thumbnailSize;
-                        newWidth = (int) (((double) originalWidth / originalHeight) * thumbnailSize);
-                    }
-
-                    thumbnailIcon = new ImageIcon(originalIcon.getImage().getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH));
+                    thumbnailIcon = scaleImageIcon(imagePath);
                     label.setIcon(thumbnailIcon);
                 }
 
@@ -84,6 +69,27 @@ public class ThumbnailListCellRenderer extends DefaultListCellRenderer {
             label.setPreferredSize(new Dimension(thumbnailSize, thumbnailSize));
         }
         return label;
+    }
+
+    private ImageIcon scaleImageIcon(String imagePath) {
+        ImageIcon thumbnailIcon;
+        ImageIcon originalIcon = model.getThumbnailCache().get(imagePath);
+        int originalWidth = originalIcon.getIconWidth();
+        int originalHeight = originalIcon.getIconHeight();
+
+        // calculate new width and height
+        int newWidth;
+        int newHeight;
+        if (originalWidth > originalHeight) {
+            newWidth = thumbnailSize;
+            newHeight = (int) (((double) originalHeight / originalWidth) * thumbnailSize);
+        } else {
+            newHeight = thumbnailSize;
+            newWidth = (int) (((double) originalWidth / originalHeight) * thumbnailSize);
+        }
+
+        thumbnailIcon = new ImageIcon(originalIcon.getImage().getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH));
+        return thumbnailIcon;
     }
 
 }
