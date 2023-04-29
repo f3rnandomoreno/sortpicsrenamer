@@ -3,12 +3,14 @@ package org.moreno.sortpics;
 import org.moreno.sortpics.controller.FirstPanelController;
 import org.moreno.sortpics.gui.FolderAnalyzer;
 import org.moreno.sortpics.model.FirstPanelModel;
+import org.pushingpixels.substance.api.skin.SubstanceGraphiteLookAndFeel;
 
 import javax.swing.*;
 
 public class Main {
 
     public static void main(String[] args) {
+        setLookAndFeel();
         // Create a new instance of FolderAnalyzer
         FolderAnalyzer folderAnalyzer = new FolderAnalyzer();
         FirstPanelModel model = new FirstPanelModel();
@@ -23,6 +25,21 @@ public class Main {
         // Pack the frame (resize it to fit its subcomponents), and then make it visible
         frame.pack();
         frame.setVisible(true);
+    }
+
+    public static void setLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel(new SubstanceGraphiteLookAndFeel());
+        } catch (Exception e) {
+            try {
+                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+                System.out.println("Cross platform L&F");
+            } catch (Exception ex) {
+
+            }
+        }
+
+
     }
 
 }

@@ -63,7 +63,10 @@
         <children>
           <component id="2b486" class="javax.swing.JList" binding="lsFilesToProcess">
             <constraints/>
-            <properties/>
+            <properties>
+              <selectionBackground color="-5604689"/>
+              <selectionForeground color="-16708933"/>
+            </properties>
           </component>
         </children>
       </scrollpane>

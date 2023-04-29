@@ -15,6 +15,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -38,11 +40,38 @@ public class FirstPanelController {
         view.getBtSortPhotos().addActionListener(this::btSortPhotosActionPerformed);
         view.getBtChooseFolder().addActionListener(this::chooseFolderActionPerformed);
         view.getMenuItemMove().addActionListener(this::moveMenuItemActionPerformed);
+        view.getMenuItemDelete().addActionListener(this::deleteMenuItemActionPerformed);
         Preferences prefs = Preferences.userRoot().node("com.moreno.sortpics");
         String lastPath = prefs.get("lastPath", null);
         if (lastPath != null) {
             model.setDirectory(new File(lastPath));
             this.view.getTfFolderToOrder().setText(lastPath);
+        }
+    }
+
+    private void deleteMenuItemActionPerformed(ActionEvent actionEvent) {
+        // create confirmation dialog
+        // get list from view
+        List selectedValuesList = view.getLsFilesToProcess().getSelectedValuesList();
+        //create confirmation dialog
+        int result = JOptionPane.showConfirmDialog(view.getMainPanel(), "Are you sure you want to delete the selected files?", "Delete files", JOptionPane.YES_NO_OPTION);
+        // if confirmed
+        if (result == JOptionPane.YES_OPTION) {
+            // delete files
+            for (Object selectedValue : selectedValuesList) {
+                ImageFileData imageFileData = (ImageFileData) selectedValue;
+                try {
+                    imageFileData.remove();
+                } catch (NoSuchFileException e) {
+                    JOptionPane.showMessageDialog(view.getMainPanel(), "The file does not exists", "Error", JOptionPane.ERROR_MESSAGE);
+                } catch (IOException e) {
+                    // show dialog with error
+                    JOptionPane.showMessageDialog(view.getMainPanel(), "Error deleting file: " + imageFileData.getOriginalFile().getName() + "- " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            model.getFiles().removeAll(selectedValuesList);
+            // update view
+            view.updateJList(model.getFiles());
         }
     }
 
