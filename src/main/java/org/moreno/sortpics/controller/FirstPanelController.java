@@ -12,6 +12,7 @@ import org.moreno.sortpics.model.FirstPanelModel;
 import org.moreno.sortpics.model.ImageFileData;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.util.List;
@@ -36,12 +37,19 @@ public class FirstPanelController {
         view.setCellRenderer(renderer);
         view.getBtSortPhotos().addActionListener(this::btSortPhotosActionPerformed);
         view.getBtChooseFolder().addActionListener(this::chooseFolderActionPerformed);
+        view.getMenuItemMove().addActionListener(this::moveMenuItemActionPerformed);
         Preferences prefs = Preferences.userRoot().node("com.moreno.sortpics");
         String lastPath = prefs.get("lastPath", null);
         if (lastPath != null) {
             model.setDirectory(new File(lastPath));
             this.view.getTfFolderToOrder().setText(lastPath);
         }
+    }
+
+    private void moveMenuItemActionPerformed(ActionEvent actionEvent) {
+        // get list from view
+        List selectedValuesList = view.getLsFilesToProcess().getSelectedValuesList();
+        System.out.printf("selectedValuesList: %s%n", selectedValuesList);
     }
 
     private void btSortPhotosActionPerformed(java.awt.event.ActionEvent evt) {

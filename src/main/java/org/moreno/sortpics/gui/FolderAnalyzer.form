@@ -29,7 +29,7 @@
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Label"/>
+          <text value=""/>
         </properties>
       </component>
       <component id="b1ef6" class="javax.swing.JLabel" binding="lbFilesProcessing">
@@ -37,7 +37,7 @@
           <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Label"/>
+          <text value=""/>
         </properties>
       </component>
       <component id="d7473" class="javax.swing.JButton" binding="btSortPhotos">

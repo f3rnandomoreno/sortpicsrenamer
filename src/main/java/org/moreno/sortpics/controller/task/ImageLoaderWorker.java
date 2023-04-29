@@ -4,28 +4,21 @@
  */
 package org.moreno.sortpics.controller.task;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import lombok.Getter;
+import org.moreno.sortpics.model.FirstPanelModel;
+import org.moreno.sortpics.rename.NameUtils;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import javax.swing.ImageIcon;
-import javax.swing.SwingWorker;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.moreno.sortpics.model.FirstPanelModel;
-import org.moreno.sortpics.rename.NameUtils;
+import javax.swing.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author Fernando Moreno Ruiz <fernandomorenoruiz@gmail.com>
@@ -33,16 +26,13 @@ import org.moreno.sortpics.rename.NameUtils;
 @Getter
 public class ImageLoaderWorker extends SwingWorker<Void, ImageIcon> {
 
-    private final int thumbnailSize = 128; // Tamaño de las miniaturas
     final FirstPanelModel model;
-    //private final ConcurrentMap<String, ImageIcon> thumbnailCache = new ConcurrentHashMap<>();
-    //private final ConcurrentLinkedDeque<File> listFiles = new ConcurrentLinkedDeque<>();
+    private final int thumbnailSize = 128; // Thumbnail size in pixels
     private final ImageIcon loadingImageIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Loading_icon.jpg"));
+    volatile boolean programShutdown = false;
     private ImageIcon noLoadImageIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Loading_icon.jpg"));
-
     private volatile int numberOfThreads = 20;
     private ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
-    volatile boolean programShutdown = false;
 
     public ImageLoaderWorker(FirstPanelModel model) {
         this.model = model;
@@ -70,8 +60,6 @@ public class ImageLoaderWorker extends SwingWorker<Void, ImageIcon> {
 
                             thumbnailCache.put(imageFile.getAbsolutePath(), thumbnailIcon);
                         }
-
-                        //System.out.println("thumbnailCache.size():" + thumbnailCache.size());
                     }
                 });
             } else if (programShutdown) {

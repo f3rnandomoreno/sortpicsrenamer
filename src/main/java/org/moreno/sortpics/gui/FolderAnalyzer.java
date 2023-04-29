@@ -10,6 +10,9 @@ import java.util.List;
 
 @Getter
 public class FolderAnalyzer {
+    JMenuItem menuItemDelete;
+    JMenuItem menuItemRename;
+    JMenuItem menuItemMove;
     private JButton btChooseFolder;
     private JTextField tfFolderToOrder;
     private JList lsFilesToProcess;
@@ -18,6 +21,24 @@ public class FolderAnalyzer {
     private JButton btSortPhotos;
     private JProgressBar pbOrderProgress;
     private JPanel mainPanel;
+
+    // constructor
+    public FolderAnalyzer() {
+        createPopupMenu();
+    }
+
+    private void createPopupMenu() {
+        // create JPopupMenu with 3 items
+        JPopupMenu popupMenu = new JPopupMenu();
+        menuItemDelete = new JMenuItem("Delete");
+        menuItemRename = new JMenuItem("Rename");
+        menuItemMove = new JMenuItem("Remove Camera timestamp format from filename");
+        popupMenu.add(menuItemDelete);
+        popupMenu.add(menuItemRename);
+        popupMenu.add(menuItemMove);
+        // add JPopupMenu to the list
+        this.lsFilesToProcess.setComponentPopupMenu(popupMenu);
+    }
 
     public void setCellRenderer(ThumbnailListCellRenderer renderer) {
         this.lsFilesToProcess.setCellRenderer(renderer);

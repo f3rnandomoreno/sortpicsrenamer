@@ -1,6 +1,7 @@
-package org.moreno.sortpics.gui;
+package org.moreno.sortpics;
 
 import org.moreno.sortpics.controller.FirstPanelController;
+import org.moreno.sortpics.gui.FolderAnalyzer;
 import org.moreno.sortpics.model.FirstPanelModel;
 
 import javax.swing.*;
