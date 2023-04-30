@@ -88,9 +88,9 @@ public class FirstPanelController {
         if (selectedItem != null) {
             var newName = showEditTextDialog(null, selectedItem.getNewName());
             selectedItem.setNewName(newName);
-            // update selected item
-            view.getLsFilesToProcess().updateUI();
             sortJList();
+            view.getLsFilesToProcess().updateUI();
+
         }
     }
 
