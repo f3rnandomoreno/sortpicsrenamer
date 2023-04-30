@@ -70,8 +70,6 @@ public class FirstPanelController {
                 img.moveToNewName();
                 this.model.getFilesToCreateThumbnail().add(img.getOriginalFile());
                 view.setProgressValue(ic);
-                // update selected item
-                view.getLsFilesToProcess().updateUI();
             } catch (NoSuchFileException ex) {
                 // show error message
                 JOptionPane.showMessageDialog(view.getMainPanel(), "File not found: " + img.getFileName(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -81,6 +79,7 @@ public class FirstPanelController {
             }
         });
         shutdownExecutorService();
+        view.getLsFilesToProcess().updateUI();
         view.getLbInfo().setText("Files renamed");
     }
 
