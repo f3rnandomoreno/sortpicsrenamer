@@ -4,6 +4,16 @@
  */
 package org.moreno.sortpics.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.sanselan.ImageReadException;
+import org.moreno.sortpics.rename.CameraTimestampName;
+import org.moreno.sortpics.rename.JpegFileMetadata;
+import org.moreno.sortpics.rename.NameUtils;
+import org.moreno.sortpics.utils.Log;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,38 +21,34 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.sanselan.ImageReadException;
-import org.moreno.sortpics.rename.CameraTimestampName;
-import org.moreno.sortpics.rename.JpegFileMetadata;
-import org.moreno.sortpics.rename.NameUtils;
 import static org.moreno.sortpics.utils.ColorGenerator.getColorFromDate;
-import org.moreno.sortpics.utils.Log;
 
 /**
- *
  * @author Fernando Moreno Ruiz <fernandomorenoruiz@gmail.com>
  */
 @Builder
 @Data
-@RequiredArgsConstructor
 @AllArgsConstructor
 public class ImageFileData implements Comparable<ImageFileData> {
 
-    private final File originalFile;
+    private String newPath;
+    private String absolutePath;
+    private File originalFile;
     private String fileName;
     private String newName;
-    private final String newPath;
-    private final String absolutePath;
     private boolean imageFile;
     private boolean file;
     private boolean videoFile;
     private String timeDateString;
     private String htmlColor;
+
+    // create constructor of required fields originalFile, newPath, absolutePath
+    public ImageFileData(File originalFile, String newPath, String absolutePath) {
+        this.originalFile = originalFile;
+        this.newPath = newPath;
+        this.absolutePath = absolutePath;
+    }
+
 
     public ImageFileData(File file, int number) throws IOException, ImageReadException, ParseException {
         this.originalFile = file;
@@ -59,12 +65,14 @@ public class ImageFileData implements Comparable<ImageFileData> {
 
     public void moveToNewName() throws IOException {
         if (!newNameIsDifferent()) {
-            var path = Files.move(Path.of(originalFile.getCanonicalPath()), Path.of(newPath + newName), StandardCopyOption.REPLACE_EXISTING);
+            var newFullPath = newPath + newName;
+            var path = Files.move(Path.of(originalFile.getCanonicalPath()), Path.of(newFullPath), StandardCopyOption.REPLACE_EXISTING);
+            setOriginalFile(new File(newFullPath));
             Log.debug("moved file: " + path);
         }
     }
 
-    public boolean newNameIsDifferent(){
+    public boolean newNameIsDifferent() {
         return newName.equals(fileName);
     }
 
@@ -88,11 +96,18 @@ public class ImageFileData implements Comparable<ImageFileData> {
         return JpegFileMetadata.isCameraTimestampNaming(originalFile.getAbsolutePath());
     }
 
-    public String getDayDate(){
+    public String getDayDate() {
         return JpegFileMetadata.getDateFromFileName(newName).getDateString();
     }
-    public String getTimeDate(){
+
+    public String getTimeDate() {
         return JpegFileMetadata.getDateFromFileName(newName).getTimeString();
+    }
+
+    public void setOriginalFile(File originalFile) {
+        this.originalFile = originalFile;
+        this.absolutePath = originalFile.getAbsolutePath();
+        this.fileName = originalFile.getName();
     }
 
     @Override

@@ -13,7 +13,6 @@ import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
-import java.util.Collections;
 import java.util.List;
 import java.util.prefs.Preferences;
 import java.util.stream.IntStream;
@@ -68,7 +67,10 @@ public class FirstPanelController {
             try {
                 // update progress
                 img.moveToNewName();
+                this.model.getFilesToCreateThumbnail().add(img.getOriginalFile());
                 view.setProgressValue(ic);
+                // update selected item
+                view.getLsFilesToProcess().updateUI();
             } catch (NoSuchFileException ex) {
                 // show error message
                 JOptionPane.showMessageDialog(view.getMainPanel(), "File not found: " + img.getFileName(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -86,6 +88,8 @@ public class FirstPanelController {
         if (selectedItem != null) {
             var newName = showEditTextDialog(null, selectedItem.getNewName());
             selectedItem.setNewName(newName);
+            // update selected item
+            view.getLsFilesToProcess().updateUI();
             sortJList();
         }
     }
@@ -103,6 +107,10 @@ public class FirstPanelController {
                 ImageFileData imageFileData = (ImageFileData) selectedValue;
                 try {
                     imageFileData.remove();
+                    // remove selected item from model
+                    model.getFiles().remove(selectedValue);
+                    // update view ui
+                    view.getLsFilesToProcess().updateUI();
                 } catch (NoSuchFileException e) {
                     JOptionPane.showMessageDialog(view.getMainPanel(), "The file does not exists", "Error", JOptionPane.ERROR_MESSAGE);
                 } catch (IOException e) {
@@ -111,9 +119,9 @@ public class FirstPanelController {
                 }
             }
             model.getFiles().removeAll(selectedValuesList);
-            Collections.sort(model.getFiles());
+            //Collections.sort(model.getFiles());
             // update view
-            view.updateJList(model.getFiles());
+            //view.updateJList(model.getFiles());
         }
     }
 
@@ -124,6 +132,8 @@ public class FirstPanelController {
             ImageFileData imageFileData = (ImageFileData) selectedValue;
             try {
                 imageFileData.moveToNoCameraStampName();
+                // update selected item
+                view.getLsFilesToProcess().updateUI();
             } catch (IOException e) {
                 // show dialog with error
                 JOptionPane.showMessageDialog(view.getMainPanel(), "Error renaming file: " + imageFileData.getFileName() + "- " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
