@@ -60,6 +60,7 @@ public class FirstPanelController {
     }
 
     private void renameFiles(ListModel model) {
+        initExecutorService();
         view.setProgressValue(0);
         view.getPbOrderProgress().setMaximum(model.getSize());
         IntStream.range(0, model.getSize()).forEach(ic -> {
@@ -79,7 +80,7 @@ public class FirstPanelController {
                 JOptionPane.showMessageDialog(view.getMainPanel(), "Error renaming file: " + img.getFileName() + "- " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
-
+        shutdownExecutorService();
         view.getLbInfo().setText("Files renamed");
     }
 
