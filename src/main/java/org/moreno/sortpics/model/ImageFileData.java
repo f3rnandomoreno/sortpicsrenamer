@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
+import java.util.Objects;
 
 import static org.moreno.sortpics.utils.ColorGenerator.getColorFromDate;
 
@@ -31,6 +32,8 @@ import static org.moreno.sortpics.utils.ColorGenerator.getColorFromDate;
 @AllArgsConstructor
 public class ImageFileData implements Comparable<ImageFileData> {
 
+    private String timeDateString;
+    private long size;
     private String newPath;
     private String absolutePath;
     private File originalFile;
@@ -39,7 +42,7 @@ public class ImageFileData implements Comparable<ImageFileData> {
     private boolean imageFile;
     private boolean file;
     private boolean videoFile;
-    private String timeDateString;
+    private String dayDateString;
     private String htmlColor;
 
     // create constructor of required fields originalFile, newPath, absolutePath
@@ -53,14 +56,16 @@ public class ImageFileData implements Comparable<ImageFileData> {
     public ImageFileData(File file, int number) throws IOException, ImageReadException, ParseException {
         this.originalFile = file;
         this.file = file.isFile();
+        this.size = file.length();
         this.newPath = FilenameUtils.getFullPath(file.getCanonicalPath());
         this.newName = CameraTimestampName.getName(file.getAbsolutePath(), number);
         this.absolutePath = originalFile.getAbsolutePath();
         this.fileName = originalFile.getName();
         this.imageFile = NameUtils.isImage(file);
         this.videoFile = false;
-        this.timeDateString = getDayDate();
-        this.htmlColor = getColorFromDate(timeDateString);
+        this.dayDateString = getDayDate();
+        this.timeDateString = getTimeDate();
+        this.htmlColor = getColorFromDate(dayDateString);
     }
 
     public void moveToNewName() throws IOException {
@@ -108,6 +113,26 @@ public class ImageFileData implements Comparable<ImageFileData> {
         this.originalFile = originalFile;
         this.absolutePath = originalFile.getAbsolutePath();
         this.fileName = originalFile.getName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ImageFileData that = (ImageFileData) o;
+        return size == that.size && timeDateString.equals(that.timeDateString) && dayDateString.equals(that.dayDateString);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(size, dayDateString);
+    }
+
+    @Override
+    public String toString() {
+        return "ImageFileData{" +
+                "absolutePath='" + absolutePath + '\'' +
+                '}';
     }
 
     @Override

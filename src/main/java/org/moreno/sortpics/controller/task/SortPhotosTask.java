@@ -15,7 +15,9 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,6 +68,19 @@ public class SortPhotosTask extends SwingWorker<Void, ImageFileData> {
         return null;
     }
 
+    private Map<ImageFileData, ImageFileData> searchDuplicatedFiles(List<ImageFileData> fileList) {
+        Map<ImageFileData, ImageFileData> duplicateFiles = new HashMap<>();
+        if (fileList.size() < 2) {
+            return duplicateFiles;
+        }
+        for (int i = 0; i < fileList.size() - 1; i++) {
+            if (fileList.get(i).equals(fileList.get(i + 1))) {
+                duplicateFiles.put(fileList.get(i), fileList.get(i + 1));
+            }
+        }
+        return duplicateFiles;
+    }
+
     @Override
     protected void process(List<ImageFileData> chunks) {
         for (ImageFileData imgFileData : chunks) {
@@ -78,6 +93,8 @@ public class SortPhotosTask extends SwingWorker<Void, ImageFileData> {
         controller.setStateText("Search finished.");
         controller.shutdownExecutorService();
         this.model.sort();
+        Map duplicateFiles = searchDuplicatedFiles(this.model.getFiles());
+        System.out.println("Duplicated files: " + duplicateFiles);
         controller.updateJList(this.model.getFiles());
         this.controller.activateBtRenameFiles();
 
