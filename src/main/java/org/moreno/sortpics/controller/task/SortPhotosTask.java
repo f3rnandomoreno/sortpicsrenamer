@@ -7,6 +7,7 @@ package org.moreno.sortpics.controller.task;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.sanselan.ImageReadException;
 import org.moreno.sortpics.controller.FirstPanelController;
+import org.moreno.sortpics.gui.DuplicatesWindow;
 import org.moreno.sortpics.model.FirstPanelModel;
 import org.moreno.sortpics.model.ImageFileData;
 
@@ -104,6 +105,11 @@ public class SortPhotosTask extends SwingWorker<Void, ImageFileData> {
         controller.shutdownExecutorService();
         this.model.sort();
         Map duplicateFiles = searchDuplicatedFiles(this.model.getFiles());
+        if (duplicateFiles.size() > 0) {
+            DuplicatesWindow duplicatesWindow = new DuplicatesWindow(duplicateFiles);
+            duplicatesWindow.setVisible(true);
+
+        }
         System.out.println("Duplicated files: " + duplicateFiles);
         controller.updateJList(this.model.getFiles());
         this.controller.activateBtRenameFiles();

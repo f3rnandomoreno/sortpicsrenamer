@@ -31,7 +31,7 @@ public class ImageLoaderWorker extends SwingWorker<Void, ImageIcon> {
     private final ImageIcon loadingImageIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Loading_icon.jpg"));
     volatile boolean programShutdown = false;
     private ImageIcon noLoadImageIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Loading_icon.jpg"));
-    private volatile int numberOfThreads = 20;
+    private volatile int numberOfThreads = 2;
     private ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
 
     public ImageLoaderWorker(FirstPanelModel model) {
@@ -97,5 +97,4 @@ public class ImageLoaderWorker extends SwingWorker<Void, ImageIcon> {
         executorService = Executors.newFixedThreadPool(numberOfThreads);
         programShutdown = false;
     }
-
 }
