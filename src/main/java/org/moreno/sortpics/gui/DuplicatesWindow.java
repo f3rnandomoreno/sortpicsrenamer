@@ -56,7 +56,9 @@ public class DuplicatesWindow extends JFrame {
             try {
                 addImageFileDataToTable(entry.getKey(), tableModel);
                 for (ImageFileData duplicate : entry.getValue()) {
-                    addImageFileDataToTable(duplicate, tableModel);
+                    if (duplicate.isImageFile()) {
+                        addImageFileDataToTable(duplicate, tableModel);
+                    }
                 }
             } catch (IOException e) {
                 // show log error
