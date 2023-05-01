@@ -7,9 +7,12 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +58,16 @@ public class DuplicatesWindow extends JFrame {
 
         imageTable = new JTable(tableModel);
         imageTable.setRowHeight(100);
+        imageTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    int row = imageTable.rowAtPoint(e.getPoint());
+                    imageTable.getSelectionModel().setSelectionInterval(row, row);
+                    showContextMenu(e.getX(), e.getY());
+                }
+            }
+        });
         JScrollPane scrollPane = new JScrollPane(imageTable);
 
         deleteButton = new JButton("Eliminar seleccionados");
@@ -81,6 +94,40 @@ public class DuplicatesWindow extends JFrame {
 
         add(scrollPane, BorderLayout.CENTER);
         add(deleteButton, BorderLayout.SOUTH);
+    }
+
+    private void showContextMenu(int x, int y) {
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem menuItem = new JMenuItem("Abrir ubicación del archivo");
+        menuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = imageTable.getSelectedRow();
+                String filePath = (String) tableModel.getValueAt(selectedRow, 2);
+                openFileLocation(filePath);
+            }
+        });
+        menu.add(menuItem);
+        menu.show(imageTable, x, y);
+    }
+
+    private void openFileLocation(String filePath) {
+        try {
+            String osName = System.getProperty("os.name").toLowerCase();
+            Runtime rt = Runtime.getRuntime();
+            if (osName.indexOf("win") >= 0) {
+                // Para Windows
+                rt.exec("explorer.exe /select," + filePath);
+            } else if (osName.indexOf("mac") >= 0) {
+                // Para MacOS
+                rt.exec("open " + Paths.get(filePath).getParent().toString());
+            } else {
+                // Para sistemas Unix-like, puedes probar con xdg-open
+                rt.exec("xdg-open " + Paths.get(filePath).getParent().toString());
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void addImageFileDataToTable(ImageFileData data, DefaultTableModel model) {
