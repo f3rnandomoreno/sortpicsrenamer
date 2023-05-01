@@ -38,6 +38,27 @@ public class ImageLoaderWorker extends SwingWorker<Void, ImageIcon> {
         this.model = model;
     }
 
+    public static BufferedImage readScaledImage(File imageFile, int thumbnailSize) throws IOException {
+        try (ImageInputStream iis = ImageIO.createImageInputStream(imageFile)) {
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+            if (readers.hasNext()) {
+                ImageReader reader = readers.next();
+                try {
+                    reader.setInput(iis);
+                    ImageReadParam param = reader.getDefaultReadParam();
+                    int originalWidth = reader.getWidth(0);
+                    int originalHeight = reader.getHeight(0);
+                    int scaleFactor = Math.max(Math.max(originalWidth / thumbnailSize, originalHeight / thumbnailSize), 1);
+                    param.setSourceSubsampling(scaleFactor, scaleFactor, 0, 0);
+                    return reader.read(0, param);
+                } finally {
+                    reader.dispose();
+                }
+            }
+        }
+        throw new IOException("No ImageReader found for the specified file: " + imageFile.getPath());
+    }
+
     @Override
     protected Void doInBackground() throws Exception {
         var listFiles = model.getFilesToCreateThumbnail();
@@ -66,27 +87,6 @@ public class ImageLoaderWorker extends SwingWorker<Void, ImageIcon> {
                 executorService.shutdown();
             }
         }
-    }
-
-    public BufferedImage readScaledImage(File imageFile, int thumbnailSize) throws IOException {
-        try (ImageInputStream iis = ImageIO.createImageInputStream(imageFile)) {
-            Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
-            if (readers.hasNext()) {
-                ImageReader reader = readers.next();
-                try {
-                    reader.setInput(iis);
-                    ImageReadParam param = reader.getDefaultReadParam();
-                    int originalWidth = reader.getWidth(0);
-                    int originalHeight = reader.getHeight(0);
-                    int scaleFactor = Math.max(Math.max(originalWidth / thumbnailSize, originalHeight / thumbnailSize), 1);
-                    param.setSourceSubsampling(scaleFactor, scaleFactor, 0, 0);
-                    return reader.read(0, param);
-                } finally {
-                    reader.dispose();
-                }
-            }
-        }
-        throw new IOException("No ImageReader found for the specified file: " + imageFile.getPath());
     }
 
     public void shutdownExecutorService() {

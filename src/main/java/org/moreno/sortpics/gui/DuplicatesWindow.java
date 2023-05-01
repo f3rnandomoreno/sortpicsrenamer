@@ -1,6 +1,7 @@
 package org.moreno.sortpics.gui;
 
 import org.moreno.sortpics.model.ImageFileData;
+import org.moreno.sortpics.utils.Log;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -15,6 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+
+import static org.moreno.sortpics.controller.task.ImageLoaderWorker.readScaledImage;
 
 public class DuplicatesWindow extends JFrame {
     private JTable imageTable;
@@ -50,9 +53,15 @@ public class DuplicatesWindow extends JFrame {
 
         // Populate our table with data
         for (Map.Entry<ImageFileData, List<ImageFileData>> entry : duplicates.entrySet()) {
-            addImageFileDataToTable(entry.getKey(), tableModel);
-            for (ImageFileData duplicate : entry.getValue()) {
-                addImageFileDataToTable(duplicate, tableModel);
+            try {
+                addImageFileDataToTable(entry.getKey(), tableModel);
+                for (ImageFileData duplicate : entry.getValue()) {
+                    addImageFileDataToTable(duplicate, tableModel);
+                }
+            } catch (IOException e) {
+                // show log error
+                Log.debug("Error al cargar la imagen: " + entry.getKey().getAbsolutePath());
+
             }
         }
 
@@ -120,7 +129,7 @@ public class DuplicatesWindow extends JFrame {
                 rt.exec("explorer.exe /select," + filePath);
             } else if (osName.indexOf("mac") >= 0) {
                 // Para MacOS
-                rt.exec("open " + Paths.get(filePath).getParent().toString());
+                rt.exec("open \"" + Paths.get(filePath).getParent().toString() + "\"");
             } else {
                 // Para sistemas Unix-like, puedes probar con xdg-open
                 rt.exec("xdg-open " + Paths.get(filePath).getParent().toString());
@@ -130,8 +139,10 @@ public class DuplicatesWindow extends JFrame {
         }
     }
 
-    private void addImageFileDataToTable(ImageFileData data, DefaultTableModel model) {
-        ImageIcon imageIcon = new ImageIcon(new ImageIcon(data.getAbsolutePath()).getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT));
+    private void addImageFileDataToTable(ImageFileData data, DefaultTableModel model) throws IOException {
+        var thumbnailIcon = new ImageIcon(readScaledImage(data.getOriginalFile(), 100 * 3));
+
+        ImageIcon imageIcon = new ImageIcon(thumbnailIcon.getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT));
         Object[] rowData = {false, data.getFileName(), data.getAbsolutePath(), imageIcon};
         model.addRow(rowData);
     }
