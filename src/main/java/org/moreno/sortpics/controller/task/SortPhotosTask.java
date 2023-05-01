@@ -14,10 +14,7 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,14 +65,27 @@ public class SortPhotosTask extends SwingWorker<Void, ImageFileData> {
         return null;
     }
 
-    private Map<ImageFileData, ImageFileData> searchDuplicatedFiles(List<ImageFileData> fileList) {
-        Map<ImageFileData, ImageFileData> duplicateFiles = new HashMap<>();
+    private Map<ImageFileData, List<ImageFileData>> searchDuplicatedFiles(List<ImageFileData> fileList) {
+        Set<Integer> visitedPositions = new HashSet<>();
+        Map<ImageFileData, List<ImageFileData>> duplicateFiles = new HashMap<>();
         if (fileList.size() < 2) {
             return duplicateFiles;
         }
         for (int i = 0; i < fileList.size() - 1; i++) {
+            if (visitedPositions.contains(i)) {
+                continue;
+            }
             if (fileList.get(i).equals(fileList.get(i + 1))) {
-                duplicateFiles.put(fileList.get(i), fileList.get(i + 1));
+                List<ImageFileData> duplicatedFiles = new ArrayList<>();
+                duplicatedFiles.add(fileList.get(i + 1));
+                duplicateFiles.put(fileList.get(i), duplicatedFiles);
+                visitedPositions.add(i + 1);
+                int j = 1;
+                while (i + j < fileList.size() - 1 && fileList.get(i).equals(fileList.get(i + j + 1))) {
+                    duplicatedFiles.add(fileList.get(i + j + 1));
+                    visitedPositions.add(i + j + 1);
+                    j++;
+                }
             }
         }
         return duplicateFiles;
