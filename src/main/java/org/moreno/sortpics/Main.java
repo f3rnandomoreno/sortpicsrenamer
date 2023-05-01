@@ -13,12 +13,14 @@ public class Main {
         //setLookAndFeel();
         // Create a new instance of FolderAnalyzer
         FolderAnalyzer folderAnalyzer = new FolderAnalyzer();
-        FirstPanelModel model = new FirstPanelModel();
-        FirstPanelController firstPanelController = new FirstPanelController(folderAnalyzer, model);
-
         // Create a new JFrame to hold the FolderAnalyzer
         JFrame frame = new JFrame("Folder Analyzer");
         frame.setContentPane(folderAnalyzer.getMainPanel());
+        folderAnalyzer.initialize();
+
+        FirstPanelModel model = new FirstPanelModel();
+        FirstPanelController firstPanelController = new FirstPanelController(folderAnalyzer, model);
+
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
