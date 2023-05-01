@@ -7,6 +7,7 @@ package org.moreno.sortpics.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.sanselan.ImageReadException;
 import org.moreno.sortpics.rename.CameraTimestampName;
@@ -120,7 +121,15 @@ public class ImageFileData implements Comparable<ImageFileData> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImageFileData that = (ImageFileData) o;
-        return size == that.size && timeDateString.equals(that.timeDateString) && dayDateString.equals(that.dayDateString);
+
+        try {
+            return size == that.size && timeDateString.equals(that.timeDateString) && dayDateString.equals(that.dayDateString) && FileUtils.contentEquals(originalFile, that.originalFile);
+        } catch (IOException e) {
+            // log error
+            Log.debug("error comparing files: " + e.getMessage());
+            return false;
+        }
+
     }
 
     @Override
