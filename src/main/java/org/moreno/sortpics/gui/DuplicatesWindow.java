@@ -66,6 +66,7 @@ public class DuplicatesWindow extends JFrame {
         }
 
         imageTable = new JTable(tableModel);
+        imageTable.getColumnModel().getColumn(0).setMaxWidth(10);  // adjust as needed
         imageTable.getColumnModel().getColumn(2).setCellRenderer(new MultiLineTableCellRenderer());
         imageTable.setRowHeight(100);
         imageTable.addMouseListener(new MouseAdapter() {
