@@ -129,20 +129,23 @@ public class DuplicatesWindow extends JFrame {
                 String selectedFilePath = (String) tableModel.getValueAt(selectedRow, 2);
                 Integer selectedId = (Integer) imageTable.getModel().getValueAt(selectedRow, 4);
                 Path selectedFolder = Paths.get(selectedFilePath).getParent();
-                Map<Integer, Integer> idCountMap = new HashMap<>();
+
+
                 for (int i = 0; i < tableModel.getRowCount(); i++) {
                     String filePath = (String) tableModel.getValueAt(i, 2);
                     Integer id = (Integer) imageTable.getModel().getValueAt(i, 4);
                     Path folder = Paths.get(filePath).getParent();
-                    if (folder.equals(selectedFolder)) {
-                        if (!id.equals(selectedId) || (id.equals(selectedId) && idCountMap.getOrDefault(id, 0) > 0)) {
+
+                    var numberOfUnselectedRowsWithId = numberOfUnselectedRowWithId(id);
+                    if (folder.equals(selectedFolder) && numberOfUnselectedRowsWithId > 1) {
+                        if (!id.equals(selectedId) || (id.equals(selectedId) && numberOfUnselectedRowsWithId > 1)) {
                             tableModel.setValueAt(true, i, 0);
                         }
-                        idCountMap.put(id, idCountMap.getOrDefault(id, 0) + 1);
                     }
                 }
             }
         });
+
 
         // dentro del constructor después de la creación de selectSameFolderButton
         deselectSameFolderButton = new JButton("Deselect in same folder");
@@ -227,6 +230,18 @@ public class DuplicatesWindow extends JFrame {
 
         Object[] rowData = {false, data.getFileName(), data.getAbsolutePath(), imageIcon, id};
         model.addRow(rowData);
+    }
+
+    private int numberOfUnselectedRowWithId(int id) {
+        int count = 0;
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            Boolean isChecked = (Boolean) tableModel.getValueAt(i, 0);
+            Integer rowId = (Integer) tableModel.getValueAt(i, 4);
+            if (isChecked != null && !isChecked && rowId.equals(id)) {
+                count++;
+            }
+        }
+        return count;
     }
 }
 
