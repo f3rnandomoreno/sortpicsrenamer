@@ -70,7 +70,7 @@ public class ImageLoaderWorker extends SwingWorker<Void, ImageIcon> {
                     if (!listFiles.isEmpty()) {
                         File imageFile = listFiles.pop();
 
-                        if (!thumbnailCache.containsKey(imageFile.getAbsolutePath()) && NameUtils.isImage(imageFile)) {
+                        if (!thumbnailCache.containsKey(imageFile.getAbsolutePath()) && NameUtils.isImage(imageFile.getAbsolutePath())) {
                             ImageIcon thumbnailIcon;
                             try {
                                 thumbnailIcon = new ImageIcon(readScaledImage(imageFile, thumbnailSize * 3));

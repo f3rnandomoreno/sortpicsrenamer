@@ -54,7 +54,7 @@ public class DuplicatesWindow extends JFrame {
             try {
                 addImageFileDataToTable(entry.getKey(), tableModel);
                 for (ImageFileData duplicate : entry.getValue()) {
-                    if (duplicate.isImageFile()) {
+                    if (duplicate.isMediaFile()) {
                         addImageFileDataToTable(duplicate, tableModel);
                     }
                 }
@@ -66,6 +66,7 @@ public class DuplicatesWindow extends JFrame {
         }
 
         imageTable = new JTable(tableModel);
+        imageTable.getColumnModel().getColumn(2).setCellRenderer(new MultiLineTableCellRenderer());
         imageTable.setRowHeight(100);
         imageTable.addMouseListener(new MouseAdapter() {
             @Override
@@ -134,9 +135,11 @@ public class DuplicatesWindow extends JFrame {
     }
 
     private void addImageFileDataToTable(ImageFileData data, DefaultTableModel model) throws IOException {
-        var thumbnailIcon = new ImageIcon(readScaledImage(data.getOriginalFile(), 100 * 3));
-
-        ImageIcon imageIcon = new ImageIcon(thumbnailIcon.getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT));
+        ImageIcon imageIcon = null;
+        if (data.isImageFile()) {
+            var thumbnailIcon = new ImageIcon(readScaledImage(data.getOriginalFile(), 100 * 3));
+            imageIcon = new ImageIcon(thumbnailIcon.getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT));
+        }
         Object[] rowData = {false, data.getFileName(), data.getAbsolutePath(), imageIcon};
         model.addRow(rowData);
     }

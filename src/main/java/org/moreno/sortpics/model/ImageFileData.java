@@ -40,9 +40,7 @@ public class ImageFileData implements Comparable<ImageFileData> {
     private File originalFile;
     private String fileName;
     private String newName;
-    private boolean imageFile;
     private boolean file;
-    private boolean videoFile;
     private String dayDateString;
     private String htmlColor;
 
@@ -62,8 +60,6 @@ public class ImageFileData implements Comparable<ImageFileData> {
         this.newName = CameraTimestampName.getName(file.getAbsolutePath(), number);
         this.absolutePath = originalFile.getAbsolutePath();
         this.fileName = originalFile.getName();
-        this.imageFile = NameUtils.isImage(file);
-        this.videoFile = false;
         this.dayDateString = getDayDate();
         this.timeDateString = getTimeDate();
         this.htmlColor = getColorFromDate(dayDateString);
@@ -147,5 +143,13 @@ public class ImageFileData implements Comparable<ImageFileData> {
     @Override
     public int compareTo(ImageFileData o) {
         return this.newName.compareTo(o.newName);
+    }
+
+    public boolean isImageFile() {
+        return NameUtils.isImage(absolutePath);
+    }
+
+    public boolean isMediaFile() {
+        return NameUtils.isMedia(absolutePath);
     }
 }

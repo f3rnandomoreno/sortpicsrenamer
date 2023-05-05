@@ -65,7 +65,7 @@ public class NameUtilsTest extends TestCommon {
         List<File> files = sut.listMediaFiles(firstPanelModel.getDirectory());
         Map<File, Boolean> mapFileDate = new HashMap<>();
         files.forEach(file -> {
-            boolean isImage = NameUtils.isImage(file);
+            boolean isImage = NameUtils.isImage(file.getAbsolutePath());
             mapFileDate.put(file, isImage);
         });
 

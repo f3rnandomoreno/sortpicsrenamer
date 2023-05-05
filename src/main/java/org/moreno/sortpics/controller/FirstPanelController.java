@@ -8,6 +8,7 @@ import org.moreno.sortpics.model.FirstPanelModel;
 import org.moreno.sortpics.model.ImageFileData;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
@@ -44,6 +45,21 @@ public class FirstPanelController {
         view.getMenuItemRename().addActionListener(this::renameMenuItemActionPerformed);
         view.getMenuItemRenameToNewName().addActionListener(this::renameToNewNameMenuItemActionPerformed);
         view.getBtRenameFiles().addActionListener(this::btRenameFilesActionPerformed);
+        // add mouse listener to list
+        view.getLsFilesToProcess().addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (evt.getClickCount() == 2) {
+                    ImageFileData image = (ImageFileData) view.getLsFilesToProcess().getSelectedValue();
+                    try {
+                        // open file with default application
+                        Desktop.getDesktop().open(image.getOriginalFile());
+                    } catch (IOException e) {
+                        JOptionPane.showMessageDialog(view.getMainPanel(), "Error renaming file: " + image.getFileName() + "- " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    view.getLsFilesToProcess().updateUI();
+                }
+            }
+        });
         Preferences prefs = Preferences.userRoot().node("com.moreno.sortpics");
         String lastPath = prefs.get("lastPath", null);
         if (lastPath != null) {

@@ -1,11 +1,13 @@
 package org.moreno.sortpics.rename;
 
-import java.io.File;
+import org.apache.commons.io.FilenameUtils;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.io.FilenameUtils;
+
+import static org.moreno.sortpics.controller.task.SortPhotosTask.isMediaFile;
 
 /**
  * @author Fernando Moreno Ruiz <fernandomorenoruiz@gmail.com>
@@ -21,7 +23,7 @@ public class NameUtils {
      *
      * @param fileName the name of the file to extract the date and time information from
      * @return an array of integers containing the date and time information, or null if no
-     *         date and time information could be extracted
+     * date and time information could be extracted
      */
     public static Optional<LocalDateTime> dateTimeOnFileName(String fileName) {
 
@@ -62,19 +64,23 @@ public class NameUtils {
 
         }
         Optional<LocalDateTime> result = Optional.empty();
-        if(digits!=null){
-            result = Optional.of(LocalDateTime.of(digits[0],digits[1],digits[2],digits[3],digits[4],digits[5]));
+        if (digits != null) {
+            result = Optional.of(LocalDateTime.of(digits[0], digits[1], digits[2], digits[3], digits[4], digits[5]));
         }
         // Return the digits array
         return result;
     }
-    
-    public static boolean isImage(File imageFile) {
-        String fileName = FilenameUtils.getName(imageFile.getAbsolutePath());
-        return Commons.getAllowedImageFormats().stream().anyMatch((extension)->{
+
+    public static boolean isImage(String absolutePath) {
+        String fileName = FilenameUtils.getName(absolutePath);
+        return Commons.getAllowedImageFormats().stream().anyMatch((extension) -> {
             return fileName.toLowerCase().endsWith(extension);
         });
     }
 
-    
+
+    public static boolean isMedia(String absolutePath) {
+        String extension = FilenameUtils.getExtension(absolutePath);
+        return isMediaFile(extension);
+    }
 }
