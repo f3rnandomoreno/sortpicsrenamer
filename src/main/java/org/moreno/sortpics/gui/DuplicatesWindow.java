@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,12 @@ import static org.moreno.sortpics.controller.task.ImageLoaderWorker.readScaledIm
 public class DuplicatesWindow extends JFrame {
     private JTable imageTable;
     private JButton deleteButton;
+    private JButton selectSameFolderButton;
+
+    private JButton deselectSameFolderButton;
+    private JButton selectAllButton;
+    private JButton deselectAllButton;
+
     private DefaultTableModel tableModel;
 
     public DuplicatesWindow(Map<ImageFileData, List<ImageFileData>> duplicates) {
@@ -29,7 +36,7 @@ public class DuplicatesWindow extends JFrame {
         setLayout(new BorderLayout());
 
         // Column names for our table
-        String[] columnNames = {"Select", "FileName", "Filepath", "Image"};
+        String[] columnNames = {"Select", "FileName", "Filepath", "Image", "id"};
 
         // Create a model for our table
         tableModel = new DefaultTableModel(columnNames, 0) {
@@ -43,21 +50,25 @@ public class DuplicatesWindow extends JFrame {
                         return String.class;
                     case 3:
                         return ImageIcon.class;
+                    case 4:
+                        return Integer.class;
                     default:
                         return super.getColumnClass(columnIndex);
                 }
             }
         };
 
+        int idIndex = 0;
         // Populate our table with data
         for (Map.Entry<ImageFileData, List<ImageFileData>> entry : duplicates.entrySet()) {
             try {
-                addImageFileDataToTable(entry.getKey(), tableModel);
+                addImageFileDataToTable(idIndex, entry.getKey(), tableModel);
                 for (ImageFileData duplicate : entry.getValue()) {
                     if (duplicate.isMediaFile()) {
-                        addImageFileDataToTable(duplicate, tableModel);
+                        addImageFileDataToTable(idIndex, duplicate, tableModel);
                     }
                 }
+                idIndex++;
             } catch (IOException e) {
                 // show log error
                 Log.debug("Error loading image: " + entry.getKey().getAbsolutePath());
@@ -83,25 +94,97 @@ public class DuplicatesWindow extends JFrame {
 
         deleteButton = new JButton("Remove selected");
         deleteButton.addActionListener(e -> {
+            // Crear un mapa para contar los ids
+            Map<Integer, Integer> idCountMap = new HashMap<>();
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                Integer id = (Integer) tableModel.getValueAt(i, 4);
+                idCountMap.put(id, idCountMap.getOrDefault(id, 0) + 1);
+            }
+
             for (int i = tableModel.getRowCount() - 1; i >= 0; i--) {
                 Boolean isChecked = (Boolean) tableModel.getValueAt(i, 0);
-                if (isChecked != null && isChecked) {
-                    // remove file
+                Integer id = (Integer) tableModel.getValueAt(i, 4);
+                if (isChecked != null && isChecked && idCountMap.get(id) > 1) {
+                    // Remover el archivo
                     Path pathFile = Path.of((String) tableModel.getValueAt(i, 2));
                     try {
                         Files.delete(pathFile);
+                        System.out.println("File removed:" + tableModel.getValueAt(i, 2));
                     } catch (IOException ex) {
-                        // show error message
-                        JOptionPane.showMessageDialog(null, "Error al eliminar el archivo: " + pathFile.toString(), "Error", JOptionPane.ERROR_MESSAGE);
+                        // Mostrar mensaje de error
+                        JOptionPane.showMessageDialog(null, "Error deleting the file: " + pathFile + "- " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
-                    System.out.println("File removed:" + tableModel.getValueAt(i, 2));
                     tableModel.removeRow(i);
+
+                    // Actualizar el conteo de ids
+                    idCountMap.put(id, idCountMap.get(id) - 1);
                 }
             }
         });
 
+        selectSameFolderButton = new JButton("Select in same folder");
+        selectSameFolderButton.addActionListener(e -> {
+            int selectedRow = imageTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                String selectedFilePath = (String) tableModel.getValueAt(selectedRow, 2);
+                Integer selectedId = (Integer) imageTable.getModel().getValueAt(selectedRow, 4);
+                Path selectedFolder = Paths.get(selectedFilePath).getParent();
+                Map<Integer, Integer> idCountMap = new HashMap<>();
+                for (int i = 0; i < tableModel.getRowCount(); i++) {
+                    String filePath = (String) tableModel.getValueAt(i, 2);
+                    Integer id = (Integer) imageTable.getModel().getValueAt(i, 4);
+                    Path folder = Paths.get(filePath).getParent();
+                    if (folder.equals(selectedFolder)) {
+                        if (!id.equals(selectedId) || (id.equals(selectedId) && idCountMap.getOrDefault(id, 0) > 0)) {
+                            tableModel.setValueAt(true, i, 0);
+                        }
+                        idCountMap.put(id, idCountMap.getOrDefault(id, 0) + 1);
+                    }
+                }
+            }
+        });
+
+        // dentro del constructor después de la creación de selectSameFolderButton
+        deselectSameFolderButton = new JButton("Deselect in same folder");
+        deselectSameFolderButton.addActionListener(e -> {
+            int selectedRow = imageTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                String selectedFilePath = (String) tableModel.getValueAt(selectedRow, 2);
+                Path selectedFolder = Paths.get(selectedFilePath).getParent();
+                for (int i = 0; i < tableModel.getRowCount(); i++) {
+                    String filePath = (String) tableModel.getValueAt(i, 2);
+                    Path folder = Paths.get(filePath).getParent();
+                    if (folder.equals(selectedFolder)) {
+                        tableModel.setValueAt(false, i, 0);
+                    }
+                }
+            }
+        });
+        selectAllButton = new JButton("Select All");
+        selectAllButton.addActionListener(e -> {
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                tableModel.setValueAt(true, i, 0);
+            }
+        });
+
+        deselectAllButton = new JButton("Deselect All");
+        deselectAllButton.addActionListener(e -> {
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                tableModel.setValueAt(false, i, 0);
+            }
+        });
+
+        JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        southPanel.add(selectAllButton);
+        southPanel.add(deselectAllButton);
+        southPanel.add(deselectSameFolderButton);
+        southPanel.add(selectSameFolderButton);
+        southPanel.add(deleteButton);
+
+
         add(scrollPane, BorderLayout.CENTER);
-        add(deleteButton, BorderLayout.SOUTH);
+        add(southPanel, BorderLayout.SOUTH);
+
     }
 
     private void showContextMenu(int x, int y) {
@@ -135,13 +218,14 @@ public class DuplicatesWindow extends JFrame {
         }
     }
 
-    private void addImageFileDataToTable(ImageFileData data, DefaultTableModel model) throws IOException {
+    private void addImageFileDataToTable(int id, ImageFileData data, DefaultTableModel model) throws IOException {
         ImageIcon imageIcon = null;
         if (data.isImageFile()) {
             var thumbnailIcon = new ImageIcon(readScaledImage(data.getOriginalFile(), 100 * 3));
             imageIcon = new ImageIcon(thumbnailIcon.getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT));
         }
-        Object[] rowData = {false, data.getFileName(), data.getAbsolutePath(), imageIcon};
+
+        Object[] rowData = {false, data.getFileName(), data.getAbsolutePath(), imageIcon, id};
         model.addRow(rowData);
     }
 }
