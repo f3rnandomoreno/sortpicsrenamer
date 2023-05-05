@@ -27,7 +27,7 @@ public class DuplicatesWindow extends JFrame {
     public DuplicatesWindow(Map<ImageFileData, List<ImageFileData>> duplicates) {
         setTitle("Archivos duplicados");
         setSize(600, 400);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
         // Column names for our table

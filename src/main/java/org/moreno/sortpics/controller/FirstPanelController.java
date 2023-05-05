@@ -42,6 +42,7 @@ public class FirstPanelController {
         view.getMenuItemRemoveCameraTimestamp().addActionListener(this::removeCameraTimestampMenuItemActionPerformed);
         view.getMenuItemDelete().addActionListener(this::deleteMenuItemActionPerformed);
         view.getMenuItemRename().addActionListener(this::renameMenuItemActionPerformed);
+        view.getMenuItemRenameToNewName().addActionListener(this::renameToNewNameMenuItemActionPerformed);
         view.getBtRenameFiles().addActionListener(this::btRenameFilesActionPerformed);
         Preferences prefs = Preferences.userRoot().node("com.moreno.sortpics");
         String lastPath = prefs.get("lastPath", null);
@@ -49,6 +50,19 @@ public class FirstPanelController {
             model.setDirectory(new File(lastPath));
             this.view.getTfFolderToOrder().setText(lastPath);
         }
+    }
+
+    private void renameToNewNameMenuItemActionPerformed(ActionEvent actionEvent) {
+        List selectedValuesList = view.getLsFilesToProcess().getSelectedValuesList();
+        selectedValuesList.forEach(img -> {
+            ImageFileData image = (ImageFileData) img;
+            try {
+                image.moveToNewName();
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(view.getMainPanel(), "Error renaming file: " + image.getFileName() + "- " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        view.getLsFilesToProcess().updateUI();
     }
 
     private void btRenameFilesActionPerformed(ActionEvent actionEvent) {
