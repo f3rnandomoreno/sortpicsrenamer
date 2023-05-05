@@ -6,8 +6,6 @@ import org.moreno.sortpics.utils.Log;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -25,13 +23,13 @@ public class DuplicatesWindow extends JFrame {
     private DefaultTableModel tableModel;
 
     public DuplicatesWindow(Map<ImageFileData, List<ImageFileData>> duplicates) {
-        setTitle("Archivos duplicados");
+        setTitle("Duplicated files");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
         // Column names for our table
-        String[] columnNames = {"Seleccionar", "Nombre del archivo", "Ruta del archivo", "Imagen"};
+        String[] columnNames = {"Select", "FileName", "Filepath", "Image"};
 
         // Create a model for our table
         tableModel = new DefaultTableModel(columnNames, 0) {
@@ -62,7 +60,7 @@ public class DuplicatesWindow extends JFrame {
                 }
             } catch (IOException e) {
                 // show log error
-                Log.debug("Error al cargar la imagen: " + entry.getKey().getAbsolutePath());
+                Log.debug("Error loading image: " + entry.getKey().getAbsolutePath());
 
             }
         }
@@ -81,24 +79,21 @@ public class DuplicatesWindow extends JFrame {
         });
         JScrollPane scrollPane = new JScrollPane(imageTable);
 
-        deleteButton = new JButton("Eliminar seleccionados");
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (int i = tableModel.getRowCount() - 1; i >= 0; i--) {
-                    Boolean isChecked = (Boolean) tableModel.getValueAt(i, 0);
-                    if (isChecked != null && isChecked) {
-                        // remove file
-                        Path pathFile = Path.of((String) tableModel.getValueAt(i, 2));
-                        try {
-                            Files.delete(pathFile);
-                        } catch (IOException ex) {
-                            // show error message
-                            JOptionPane.showMessageDialog(null, "Error al eliminar el archivo: " + pathFile.toString(), "Error", JOptionPane.ERROR_MESSAGE);
-                        }
-                        System.out.println("File removed:" + tableModel.getValueAt(i, 2));
-                        tableModel.removeRow(i);
+        deleteButton = new JButton("Remove selected");
+        deleteButton.addActionListener(e -> {
+            for (int i = tableModel.getRowCount() - 1; i >= 0; i--) {
+                Boolean isChecked = (Boolean) tableModel.getValueAt(i, 0);
+                if (isChecked != null && isChecked) {
+                    // remove file
+                    Path pathFile = Path.of((String) tableModel.getValueAt(i, 2));
+                    try {
+                        Files.delete(pathFile);
+                    } catch (IOException ex) {
+                        // show error message
+                        JOptionPane.showMessageDialog(null, "Error al eliminar el archivo: " + pathFile.toString(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
+                    System.out.println("File removed:" + tableModel.getValueAt(i, 2));
+                    tableModel.removeRow(i);
                 }
             }
         });
@@ -110,13 +105,10 @@ public class DuplicatesWindow extends JFrame {
     private void showContextMenu(int x, int y) {
         JPopupMenu menu = new JPopupMenu();
         JMenuItem menuItem = new JMenuItem("Abrir ubicación del archivo");
-        menuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selectedRow = imageTable.getSelectedRow();
-                String filePath = (String) tableModel.getValueAt(selectedRow, 2);
-                openFileLocation(filePath);
-            }
+        menuItem.addActionListener(e -> {
+            int selectedRow = imageTable.getSelectedRow();
+            String filePath = (String) tableModel.getValueAt(selectedRow, 2);
+            openFileLocation(filePath);
         });
         menu.add(menuItem);
         menu.show(imageTable, x, y);
