@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class provides utility methods to manipulate and retrieve information from file names
@@ -143,5 +145,27 @@ public class CameraTimestampName {
         Path path = Paths.get(filePath);
         var fileTime = Files.getLastModifiedTime(path);
         return new Date(fileTime.toMillis());
+    }
+
+    public static String getDateFromData(String input) {
+        String data = getData(input);
+        // Patrón de búsqueda para las fechas
+        String fechaPattern = "\\d{4}\\d{2}\\d{2}";
+        Pattern pattern = Pattern.compile(fechaPattern);
+
+        // Buscar la fecha en los datos
+        Matcher matcher = pattern.matcher(data);
+        // Obtener la primera fecha encontrada
+        String fechaParentesis = "";
+        if (matcher.find()) {
+            fechaParentesis = matcher.group(0);
+        }
+
+        // Convertir la fecha al formato YYYY-MM-DD
+        String fechaFormateada = fechaParentesis.substring(0, 4) + "-" + fechaParentesis.substring(4, 6) + "-" + fechaParentesis.substring(6, 8);
+
+        // Reemplazar la fecha dentro del primer paréntesis con la fecha formateada
+        String output = input.replaceFirst("\\((.*?)\\)", "(" + fechaFormateada + ")");
+        return output;
     }
 }

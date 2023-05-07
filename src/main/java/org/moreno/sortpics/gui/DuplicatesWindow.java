@@ -94,7 +94,6 @@ public class DuplicatesWindow extends JFrame {
 
         deleteButton = new JButton("Remove selected");
         deleteButton.addActionListener(e -> {
-            // Crear un mapa para contar los ids
             Map<Integer, Integer> idCountMap = new HashMap<>();
             for (int i = 0; i < tableModel.getRowCount(); i++) {
                 Integer id = (Integer) tableModel.getValueAt(i, 4);
@@ -135,7 +134,7 @@ public class DuplicatesWindow extends JFrame {
                     String filePath = (String) tableModel.getValueAt(i, 2);
                     Integer id = (Integer) imageTable.getModel().getValueAt(i, 4);
                     Path folder = Paths.get(filePath).getParent();
-                    
+
                     if (folder.equals(selectedFolder) && numberOfUnselectedRowWithId(id) > 1) {
                         tableModel.setValueAt(true, i, 0);
                     }
