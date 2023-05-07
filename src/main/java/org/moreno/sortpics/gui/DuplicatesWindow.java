@@ -135,9 +135,8 @@ public class DuplicatesWindow extends JFrame {
                     String filePath = (String) tableModel.getValueAt(i, 2);
                     Integer id = (Integer) imageTable.getModel().getValueAt(i, 4);
                     Path folder = Paths.get(filePath).getParent();
-
-                    var numberOfUnselectedRowsWithId = numberOfUnselectedRowWithId(id);
-                    if (folder.equals(selectedFolder) && numberOfUnselectedRowsWithId > 1) {
+                    
+                    if (folder.equals(selectedFolder) && numberOfUnselectedRowWithId(id) > 1) {
                         tableModel.setValueAt(true, i, 0);
                     }
                 }
