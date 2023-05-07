@@ -148,10 +148,6 @@ public class FirstPanelController {
                 ImageFileData imageFileData = (ImageFileData) selectedValue;
                 try {
                     imageFileData.remove();
-                    // remove selected item from model
-                    model.getFiles().remove(selectedValue);
-                    // update view ui
-                    view.getLsFilesToProcess().updateUI();
                 } catch (NoSuchFileException e) {
                     JOptionPane.showMessageDialog(view.getMainPanel(), "The file does not exists", "Error", JOptionPane.ERROR_MESSAGE);
                 } catch (IOException e) {
@@ -159,10 +155,13 @@ public class FirstPanelController {
                     JOptionPane.showMessageDialog(view.getMainPanel(), "Error deleting file: " + imageFileData.getOriginalFile().getName() + "- " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
-            model.getFiles().removeAll(selectedValuesList);
-            //Collections.sort(model.getFiles());
-            // update view
-            //view.updateJList(model.getFiles());
+            // Eliminar elementos seleccionados del modelo
+            DefaultListModel<ImageFileData> listModel = (DefaultListModel<ImageFileData>) view.getLsFilesToProcess().getModel();
+            for (Object imageFileData : selectedValuesList) {
+                listModel.removeElement(imageFileData);
+            }
+            // update view ui
+            view.getLsFilesToProcess().updateUI();
         }
     }
 
