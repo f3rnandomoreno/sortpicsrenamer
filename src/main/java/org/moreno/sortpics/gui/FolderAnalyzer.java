@@ -14,6 +14,7 @@ public class FolderAnalyzer {
     JMenuItem menuItemRename;
     JMenuItem menuItemRemoveCameraTimestamp;
     JMenuItem menuItemRenameToNewName;
+    JMenuItem menuItemGetDateFromData;
     private JButton btChooseFolder;
     private JTextField tfFolderToOrder;
     private JList lsFilesToProcess;
@@ -35,10 +36,12 @@ public class FolderAnalyzer {
         menuItemRename = new JMenuItem("Edit new name");
         menuItemRemoveCameraTimestamp = new JMenuItem("Remove Camera timestamp format from filename");
         menuItemRenameToNewName = new JMenuItem("Rename to new name");
+        menuItemGetDateFromData = new JMenuItem("Get date from Data");
         popupMenu.add(menuItemRenameToNewName);
         popupMenu.add(menuItemRemoveCameraTimestamp);
         popupMenu.add(menuItemRename);
         popupMenu.add(menuItemDelete);
+        popupMenu.add(menuItemGetDateFromData);
         // add JPopupMenu to the list
         this.lsFilesToProcess.setComponentPopupMenu(popupMenu);
     }

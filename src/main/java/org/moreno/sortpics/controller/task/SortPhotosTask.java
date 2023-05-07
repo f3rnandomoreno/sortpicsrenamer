@@ -126,7 +126,9 @@ public class SortPhotosTask extends SwingWorker<Void, ImageFileData> {
                     mediaFilesList.addAll(listMediaFiles(file));
                 } else {
                     String extension = FilenameUtils.getExtension(file.getName());
-                    if (isMediaFile(extension)) {
+
+                    // filename does not start with . and is a media file
+                    if (isMediaFile(extension) && file.getName().substring(0, 1).compareTo(".") != 0) {
                         mediaFilesList.add(file);
                     }
                 }

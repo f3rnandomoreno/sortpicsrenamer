@@ -6,6 +6,7 @@ import org.moreno.sortpics.gui.FolderAnalyzer;
 import org.moreno.sortpics.gui.ThumbnailListCellRenderer;
 import org.moreno.sortpics.model.FirstPanelModel;
 import org.moreno.sortpics.model.ImageFileData;
+import org.moreno.sortpics.rename.CameraTimestampName;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,6 +45,7 @@ public class FirstPanelController {
         view.getMenuItemDelete().addActionListener(this::deleteMenuItemActionPerformed);
         view.getMenuItemRename().addActionListener(this::renameMenuItemActionPerformed);
         view.getMenuItemRenameToNewName().addActionListener(this::renameToNewNameMenuItemActionPerformed);
+        view.getMenuItemGetDateFromData().addActionListener(this::getDateFromDataMenuItemActionPerformed);
         view.getBtRenameFiles().addActionListener(this::btRenameFilesActionPerformed);
         // add mouse listener to list
         view.getLsFilesToProcess().addMouseListener(new java.awt.event.MouseAdapter() {
@@ -66,6 +68,15 @@ public class FirstPanelController {
             model.setDirectory(new File(lastPath));
             this.view.getTfFolderToOrder().setText(lastPath);
         }
+    }
+
+    private void getDateFromDataMenuItemActionPerformed(ActionEvent actionEvent) {
+        List selectedValuesList = view.getLsFilesToProcess().getSelectedValuesList();
+        selectedValuesList.forEach(img -> {
+            ImageFileData image = (ImageFileData) img;
+            image.setNewName(CameraTimestampName.renameWithDateFromData(image.getNewName()));
+        });
+        view.getLsFilesToProcess().updateUI();
     }
 
     private void renameToNewNameMenuItemActionPerformed(ActionEvent actionEvent) {

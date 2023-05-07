@@ -147,7 +147,7 @@ public class CameraTimestampName {
         return new Date(fileTime.toMillis());
     }
 
-    public static String getDateFromData(String input) {
+    public static String renameWithDateFromData(String input) {
         String data = getData(input);
         // Patrón de búsqueda para las fechas
         String fechaPattern = "\\d{4}\\d{2}\\d{2}";
