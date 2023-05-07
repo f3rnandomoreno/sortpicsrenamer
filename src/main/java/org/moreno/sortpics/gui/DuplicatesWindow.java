@@ -138,9 +138,7 @@ public class DuplicatesWindow extends JFrame {
 
                     var numberOfUnselectedRowsWithId = numberOfUnselectedRowWithId(id);
                     if (folder.equals(selectedFolder) && numberOfUnselectedRowsWithId > 1) {
-                        //if (!id.equals(selectedId) || (id.equals(selectedId) && numberOfUnselectedRowsWithId > 1)) {
                         tableModel.setValueAt(true, i, 0);
-                        //}
                     }
                 }
             }
