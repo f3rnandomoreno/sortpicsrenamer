@@ -9,6 +9,7 @@ import org.moreno.sortpics.model.ImageFileData;
 import org.moreno.sortpics.rename.CameraTimestampName;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
@@ -44,9 +45,11 @@ public class FirstPanelController {
         view.getMenuItemRemoveCameraTimestamp().addActionListener(this::removeCameraTimestampMenuItemActionPerformed);
         view.getMenuItemDelete().addActionListener(this::deleteMenuItemActionPerformed);
         view.getMenuItemRename().addActionListener(this::renameMenuItemActionPerformed);
+        view.getMenuItemOpenFolder().addActionListener(this::openFolderMenuItemActionPerformed);
         view.getMenuItemRenameToNewName().addActionListener(this::renameToNewNameMenuItemActionPerformed);
         view.getMenuItemGetDateFromData().addActionListener(this::getDateFromDataMenuItemActionPerformed);
         view.getBtRenameFiles().addActionListener(this::btRenameFilesActionPerformed);
+        view.getTfFolderToOrder().getDocument().addDocumentListener(new TextFieldChangeListener(this::setFolderToOrderOnDocumentChange));
         // add mouse listener to list
         view.getLsFilesToProcess().addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -68,6 +71,24 @@ public class FirstPanelController {
             model.setDirectory(new File(lastPath));
             this.view.getTfFolderToOrder().setText(lastPath);
         }
+    }
+
+    private void openFolderMenuItemActionPerformed(ActionEvent actionEvent) {
+        ImageFileData image = (ImageFileData) view.getLsFilesToProcess().getSelectedValue();
+        try {
+            // open file with default application
+            Desktop.getDesktop().open(image.getOriginalFile().getParentFile());
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(view.getMainPanel(), "Error renaming file: " + image.getFileName() + "- " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void setFolderToOrderOnDocumentChange(DocumentEvent documentEvent) {
+        System.out.println("setFolderToOrderOnDocumentChange");
+        String path = view.getTfFolderToOrder().getText();
+        model.setDirectory(new File(path));
+        Preferences prefs = Preferences.userRoot().node("com.moreno.sortpics");
+        prefs.put("lastPath", path);
     }
 
     private void getDateFromDataMenuItemActionPerformed(ActionEvent actionEvent) {
