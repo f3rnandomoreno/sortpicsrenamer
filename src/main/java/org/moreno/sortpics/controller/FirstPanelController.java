@@ -37,19 +37,33 @@ public class FirstPanelController {
         this.model = model;
         imageLoaderWorker = new ImageLoaderWorker(model);
         imageLoaderWorker.execute();
-        ThumbnailListCellRenderer renderer = new ThumbnailListCellRenderer(model);
-        view.setCellRenderer(renderer);
+        // buttons
         view.getBtRenameFiles().setEnabled(false);
+        view.getBtRenameFiles().addActionListener(this::btRenameFilesActionPerformed);
         view.getBtSortPhotos().addActionListener(this::btSortPhotosActionPerformed);
         view.getBtChooseFolder().addActionListener(this::chooseFolderActionPerformed);
+
+        // menu items
         view.getMenuItemRemoveCameraTimestamp().addActionListener(this::removeCameraTimestampMenuItemActionPerformed);
         view.getMenuItemDelete().addActionListener(this::deleteMenuItemActionPerformed);
         view.getMenuItemRename().addActionListener(this::renameMenuItemActionPerformed);
         view.getMenuItemOpenFolder().addActionListener(this::openFolderMenuItemActionPerformed);
         view.getMenuItemRenameToNewName().addActionListener(this::renameToNewNameMenuItemActionPerformed);
         view.getMenuItemGetDateFromData().addActionListener(this::getDateFromDataMenuItemActionPerformed);
-        view.getBtRenameFiles().addActionListener(this::btRenameFilesActionPerformed);
+
+        // text fields
         view.getTfFolderToOrder().getDocument().addDocumentListener(new TextFieldChangeListener(this::setFolderToOrderOnDocumentChange));
+        // get preferences and init text field
+        Preferences prefs = Preferences.userRoot().node("com.moreno.sortpics");
+        String lastPath = prefs.get("lastPath", null);
+        if (lastPath != null) {
+            model.setDirectory(new File(lastPath));
+            this.view.getTfFolderToOrder().setText(lastPath);
+        }
+
+        // list
+        ThumbnailListCellRenderer renderer = new ThumbnailListCellRenderer(model);
+        view.setCellRenderer(renderer);
         // add mouse listener to list
         view.getLsFilesToProcess().addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -65,18 +79,14 @@ public class FirstPanelController {
                 }
             }
         });
-        Preferences prefs = Preferences.userRoot().node("com.moreno.sortpics");
-        String lastPath = prefs.get("lastPath", null);
-        if (lastPath != null) {
-            model.setDirectory(new File(lastPath));
-            this.view.getTfFolderToOrder().setText(lastPath);
-        }
+
+
     }
 
     private void openFolderMenuItemActionPerformed(ActionEvent actionEvent) {
         ImageFileData image = (ImageFileData) view.getLsFilesToProcess().getSelectedValue();
         try {
-            // open file with default application
+            // open directory with default application
             Desktop.getDesktop().open(image.getOriginalFile().getParentFile());
         } catch (IOException e) {
             JOptionPane.showMessageDialog(view.getMainPanel(), "Error renaming file: " + image.getFileName() + "- " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -272,4 +282,6 @@ public class FirstPanelController {
     public void activateBtRenameFiles() {
         this.view.getBtRenameFiles().setEnabled(true);
     }
+
+
 }
