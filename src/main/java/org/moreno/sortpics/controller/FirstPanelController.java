@@ -100,6 +100,55 @@ public class FirstPanelController {
         view.getLsFilesToProcess().updateUI();
     }
 
+
+    private void deleteMenuItemActionPerformed(ActionEvent actionEvent) {
+        // create confirmation dialog
+        // get list from view
+        List selectedValuesList = view.getLsFilesToProcess().getSelectedValuesList();
+        //create confirmation dialog
+        int result = JOptionPane.showConfirmDialog(view.getMainPanel(), "Are you sure you want to delete the selected files?", "Delete files", JOptionPane.YES_NO_OPTION);
+        // if confirmed
+        if (result == JOptionPane.YES_OPTION) {
+            // delete files
+            for (Object selectedValue : selectedValuesList) {
+                ImageFileData imageFileData = (ImageFileData) selectedValue;
+                try {
+                    imageFileData.remove();
+                } catch (NoSuchFileException e) {
+                    JOptionPane.showMessageDialog(view.getMainPanel(), "The file does not exists", "Error", JOptionPane.ERROR_MESSAGE);
+                } catch (IOException e) {
+                    // show dialog with error
+                    JOptionPane.showMessageDialog(view.getMainPanel(), "Error deleting file: " + imageFileData.getOriginalFile().getName() + "- " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            // Eliminar elementos seleccionados del modelo
+            DefaultListModel<ImageFileData> listModel = (DefaultListModel<ImageFileData>) view.getLsFilesToProcess().getModel();
+            for (Object imageFileData : selectedValuesList) {
+                listModel.removeElement(imageFileData);
+            }
+            // update view ui
+            view.getLsFilesToProcess().updateUI();
+        }
+    }
+
+    private void removeCameraTimestampMenuItemActionPerformed(ActionEvent actionEvent) {
+        // get list from view
+        List selectedValuesList = view.getLsFilesToProcess().getSelectedValuesList();
+        for (Object selectedValue : selectedValuesList) {
+            ImageFileData imageFileData = (ImageFileData) selectedValue;
+            try {
+                imageFileData.moveToNoCameraStampName();
+                // update selected item
+                view.getLsFilesToProcess().updateUI();
+            } catch (IOException e) {
+                // show dialog with error
+                JOptionPane.showMessageDialog(view.getMainPanel(), "Error renaming file: " + imageFileData.getFileName() + "- " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        System.out.printf("selectedValuesList: %s%n", selectedValuesList);
+    }
+
+
     private void renameToNewNameMenuItemActionPerformed(ActionEvent actionEvent) {
         List selectedValuesList = view.getLsFilesToProcess().getSelectedValuesList();
         selectedValuesList.forEach(img -> {
@@ -154,53 +203,6 @@ public class FirstPanelController {
             view.getLsFilesToProcess().updateUI();
 
         }
-    }
-
-    private void deleteMenuItemActionPerformed(ActionEvent actionEvent) {
-        // create confirmation dialog
-        // get list from view
-        List selectedValuesList = view.getLsFilesToProcess().getSelectedValuesList();
-        //create confirmation dialog
-        int result = JOptionPane.showConfirmDialog(view.getMainPanel(), "Are you sure you want to delete the selected files?", "Delete files", JOptionPane.YES_NO_OPTION);
-        // if confirmed
-        if (result == JOptionPane.YES_OPTION) {
-            // delete files
-            for (Object selectedValue : selectedValuesList) {
-                ImageFileData imageFileData = (ImageFileData) selectedValue;
-                try {
-                    imageFileData.remove();
-                } catch (NoSuchFileException e) {
-                    JOptionPane.showMessageDialog(view.getMainPanel(), "The file does not exists", "Error", JOptionPane.ERROR_MESSAGE);
-                } catch (IOException e) {
-                    // show dialog with error
-                    JOptionPane.showMessageDialog(view.getMainPanel(), "Error deleting file: " + imageFileData.getOriginalFile().getName() + "- " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-            // Eliminar elementos seleccionados del modelo
-            DefaultListModel<ImageFileData> listModel = (DefaultListModel<ImageFileData>) view.getLsFilesToProcess().getModel();
-            for (Object imageFileData : selectedValuesList) {
-                listModel.removeElement(imageFileData);
-            }
-            // update view ui
-            view.getLsFilesToProcess().updateUI();
-        }
-    }
-
-    private void removeCameraTimestampMenuItemActionPerformed(ActionEvent actionEvent) {
-        // get list from view
-        List selectedValuesList = view.getLsFilesToProcess().getSelectedValuesList();
-        for (Object selectedValue : selectedValuesList) {
-            ImageFileData imageFileData = (ImageFileData) selectedValue;
-            try {
-                imageFileData.moveToNoCameraStampName();
-                // update selected item
-                view.getLsFilesToProcess().updateUI();
-            } catch (IOException e) {
-                // show dialog with error
-                JOptionPane.showMessageDialog(view.getMainPanel(), "Error renaming file: " + imageFileData.getFileName() + "- " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-        System.out.printf("selectedValuesList: %s%n", selectedValuesList);
     }
 
     private void btSortPhotosActionPerformed(java.awt.event.ActionEvent evt) {
