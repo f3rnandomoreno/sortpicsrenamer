@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -73,7 +74,12 @@ public class CameraTimestampName {
             String dateString = "";
             String author = "";
             String data = "";
-            Optional<LocalDateTime> optionalDate = NameUtils.dateTimeOnFileName(fileName);
+            Optional<LocalDateTime> optionalDate;
+            try {
+                optionalDate = NameUtils.dateTimeOnFileName(fileName);
+            } catch (DateTimeException e) {
+                optionalDate = Optional.empty();
+            }
             if (optionalDate.isPresent()) {
                 dateString = optionalDate.get().format(DateTimeFormatter.ofPattern("(yyyy-MM-dd)'['HH.mm.ss']'"));
                 author = "FromFileName";
