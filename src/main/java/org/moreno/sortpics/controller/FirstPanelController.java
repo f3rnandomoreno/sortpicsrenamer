@@ -75,7 +75,7 @@ public class FirstPanelController {
                     } catch (IOException e) {
                         JOptionPane.showMessageDialog(view.getMainPanel(), "Error renaming file: " + image.getFileName() + "- " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
-                    view.getLsFilesToProcess().updateUI();
+                    //view.getLsFilesToProcess().updateUI();
                 }
             }
         });
