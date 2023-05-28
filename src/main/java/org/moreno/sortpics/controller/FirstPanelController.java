@@ -1,5 +1,6 @@
 package org.moreno.sortpics.controller;
 
+import org.apache.commons.io.FileUtils;
 import org.moreno.sortpics.controller.task.ImageLoaderWorker;
 import org.moreno.sortpics.controller.task.SortPhotosTask;
 import org.moreno.sortpics.gui.FolderAnalyzer;
@@ -50,6 +51,7 @@ public class FirstPanelController {
         view.getMenuItemOpenFolder().addActionListener(this::openFolderMenuItemActionPerformed);
         view.getMenuItemRenameToNewName().addActionListener(this::renameToNewNameMenuItemActionPerformed);
         view.getMenuItemGetDateFromData().addActionListener(this::getDateFromDataMenuItemActionPerformed);
+        view.getMenuItemCopyToSelectedFolder().addActionListener(this::copyToSelectedFolderMenuItemActionPerformed);
 
         // text fields
         view.getTfFolderToOrder().getDocument().addDocumentListener(new TextFieldChangeListener(this::setFolderToOrderOnDocumentChange));
@@ -81,6 +83,29 @@ public class FirstPanelController {
         });
 
 
+    }
+
+    private void copyToSelectedFolderMenuItemActionPerformed(ActionEvent actionEvent) {
+        // get list from view
+        List selectedValuesList = view.getLsFilesToProcess().getSelectedValuesList();
+        //create confirmation dialog
+        int result = JOptionPane.showConfirmDialog(view.getMainPanel(), "Are you sure you want to copy the selected files?", "Copy files", JOptionPane.YES_NO_OPTION);
+        // if confirmed
+        if (result == JOptionPane.YES_OPTION) {
+            // copy files
+            for (Object selectedValue : selectedValuesList) {
+                ImageFileData imageFileData = (ImageFileData) selectedValue;
+                try {
+                    FileUtils.copyFile(imageFileData.getOriginalFile(), new File(model.getDirectory() + File.separator + FirstPanelModel.SELECTED_DIRECTORY + File.separator + imageFileData.getFileName()));
+                    //imageFileData.getOriginalFile().copyTo(model.getDirectory() + File.separator + FirstPanelModel.SELECTED_DIRECTORY);
+                } catch (IOException e) {
+                    // show dialog with error
+                    JOptionPane.showMessageDialog(view.getMainPanel(), "Error copying file: " + imageFileData.getFileName() + "- " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            // show confirmation dialog
+            JOptionPane.showMessageDialog(view.getMainPanel(), "Files copied successfully", "Copy files", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     private void openFolderMenuItemActionPerformed(ActionEvent actionEvent) {
