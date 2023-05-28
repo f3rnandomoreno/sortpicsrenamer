@@ -5,6 +5,7 @@
 package org.moreno.sortpics.controller.task;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.sanselan.ImageReadException;
 import org.moreno.sortpics.controller.FirstPanelController;
 import org.moreno.sortpics.gui.DuplicatesWindow;
 import org.moreno.sortpics.model.FirstPanelModel;
@@ -12,10 +13,11 @@ import org.moreno.sortpics.model.ImageFileData;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.IntStream;
 
 /**
  * @author Fernando Moreno Ruiz <fernandomorenoruiz@gmail.com>
@@ -47,40 +49,25 @@ public class SortPhotosTask extends SwingWorker<Void, ImageFileData> {
     @Override
     protected Void doInBackground() {
         List<File> fileList = listMediaFiles(model.getDirectory());
-        System.out.println("files: " + fileList);
         //imageLoaderWorker.get().initExecutorService();
         numFiles = fileList.size();
-        System.out.println("Number of files: " + numFiles);
-        IntStream.range(0, numFiles).asLongStream().forEach(j -> {
-            int i = (int) j;
-            System.out.println("i: " + i + " of " + numFiles);
-            File file = fileList.get((int) i);
+        controller.initExecutorService();
+        int i = 0;
+        for (File file : fileList) {
             try {
-                ImageFileData imgFileData = new ImageFileData(file, i);
-                this.publish(imgFileData);
+                if (file.isFile()) {
+                    ImageFileData imgFileData = new ImageFileData(file, i++);
+                    this.publish(imgFileData);
+                    model.getFilesAtomicToCreateThumbnail().get().push(file);
+
+                }
                 setProgress(100 * i / numFiles);
-            } catch (Exception ex) {
+            } catch (ParseException | ImageReadException | IOException ex) {
                 // TODO manage error
                 System.out.println("Error: " + ex.getMessage());
                 Logger.getLogger(SortPhotosTask.class.getName()).log(Level.SEVERE, null, ex);
             }
-        });
-        controller.initExecutorService();
-//        for (File file : fileList) {
-//            try {
-//                if (file.isFile()) {
-//                    ImageFileData imgFileData = new ImageFileData(file, i++);
-//                    this.publish(imgFileData);
-//                    model.getFilesAtomicToCreateThumbnail().get().push(file);
-//
-//                }
-//                setProgress(100 * i / numFiles);
-//            } catch (ParseException | ImageReadException | IOException ex) {
-//                // TODO manage error
-//                System.out.println("Error: " + ex.getMessage());
-//                Logger.getLogger(SortPhotosTask.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
+        }
         return null;
     }
 
